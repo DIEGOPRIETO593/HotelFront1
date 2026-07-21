@@ -28,7 +28,6 @@ public class huespedController {
 	@Autowired
 	private IHuespedService serviciohuesped;
 
-	// 1. LISTAR PRINCIPAL
 	@GetMapping
 	public String leerhuesped(Model model) {
 		List<HuespedResponseDto> resultadoBD = serviciohuesped.listarHuespedes();
@@ -39,14 +38,12 @@ public class huespedController {
 		return "huesped/listarhuesped";
 	}
 
-	// 2. GUARDAR / ACTUALIZAR
 	@PostMapping("/guardar")
 	public String guardar(@Validated @ModelAttribute("huesped") HuespedRequestDto request, 
 			BindingResult result,
 			Model model,
 			RedirectAttributes redirect) {
 		
-		// Si hay errores de validación, volvemos a renderizar la tabla con el modal abierto
 		if (result.hasErrors()) {
 			model.addAttribute("huespedes", serviciohuesped.listarHuespedes());
 			model.addAttribute("showModal", true);
@@ -65,7 +62,6 @@ public class huespedController {
 		return "redirect:/huesped";
 	}
 
-	// 3. CARGAR DATOS PARA EDITAR
 	@GetMapping("/editar/{id}")
 	public String editarhuesped(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
 		try {
@@ -89,7 +85,6 @@ public class huespedController {
 		}
 	}
 
-	// 4. ELIMINAR
 	@GetMapping("/eliminar/{id}")
 	public String eliminarhuesped(@PathVariable("id") Integer id, RedirectAttributes redirect) {
 		try {
@@ -104,7 +99,6 @@ public class huespedController {
 		return "redirect:/huesped";
 	}
 
-	// Método auxiliar para crear objetos de alerta compatibles con Thymeleaf
 	private Map<String, String> crearMensaje(String type, String text) {
 		Map<String, String> msg = new HashMap<>();
 		msg.put("type", type);

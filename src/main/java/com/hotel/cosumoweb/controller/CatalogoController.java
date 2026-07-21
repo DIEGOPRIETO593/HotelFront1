@@ -28,7 +28,6 @@ public class CatalogoController {
     @Autowired
     private ICatalogoService Catalogo;
 
-    // 1. LISTAR PRINCIPAL
     @GetMapping
     public String leerCatalogo(Model model) {
         List<CatalogoResponseDto> resultadoBD = Catalogo.listarTodos();
@@ -39,7 +38,6 @@ public class CatalogoController {
         return "catalogo/listarcatalogo";
     }
 
-    // 2. GUARDAR / ACTUALIZAR
     @PostMapping("/guardar")
     public String guardar(@Validated @ModelAttribute("") CatalogoRequestDto request,
             BindingResult result,
@@ -64,7 +62,6 @@ public class CatalogoController {
         return "redirect:/catalogo";
     }
 
-    // 3. CARGAR DATOS PARA EDITAR
     @GetMapping("/editar/{id}")
     public String editarCatalogo(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
         try {
@@ -86,7 +83,6 @@ public class CatalogoController {
         }
     }
 
-    // 4. ELIMINAR
     @GetMapping("/eliminar/{id}")
     public String eliminarCatalogo(@PathVariable("id") Integer id, RedirectAttributes redirect) {
         try {
