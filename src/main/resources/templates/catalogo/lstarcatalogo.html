@@ -28,7 +28,7 @@
 					<p class="text-secondary small mb-0">Administra las tarifas y servicios disponibles en el hotel.</p>
 				</div>
 				<div class="d-flex gap-2">
-					<a th:href="@{/catalogoservicio}"
+					<a th:href="@{/catalogo}"
 						class="btn btn-outline-secondary shadow-sm d-flex align-items-center">
 						<i class="fas fa-sync-alt me-1"></i> Refrescar
 					</a>
@@ -60,10 +60,10 @@
 									<td class="fw-medium" th:text="${s.nombreServicio}">Servicio</td>
 									<td th:text="'$' + ${s.tarifa}">$0.00</td>
 									<td class="text-end pe-4">
-										<a th:href="@{/catalogoservicio/editar/{id}(id=${s.idServicio})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
+										<a th:href="@{/catalogo/editar/{id}(id=${s.idServicio})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
 											<i class="fas fa-pencil-alt"></i>
 										</a>
-										<a th:href="@{/catalogoservicio/eliminar/{id}(id=${s.idServicio})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este servicio?');">
+										<a th:href="@{/catalogo/eliminar/{id}(id=${s.idServicio})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este servicio?');">
 											<i class="fas fa-trash"></i>
 										</a>
 									</td>
@@ -93,10 +93,10 @@
 								Registrar Nuevo Servicio</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"
 								aria-label="Close"
-								th:onclick="|window.location.href='/catalogoservicio'|"></button>
+								th:onclick="|window.location.href='/catalogo'|"></button>
 						</div>
 
-						<form th:action="@{/catalogoservicio/guardar}" th:object="${servicio}" method="post">
+						<form th:action="@{/catalogo/guardar}" th:object="${servicio}" method="post">
 
 							<input type="hidden" th:field="*{idServicio}" />
 
@@ -113,7 +113,7 @@
 							</div>
 
 							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
-								<a th:href="@{/catalogoservicio}" class="btn btn-secondary">Cancelar</a>
+								<a th:href="@{/catalogo}" class="btn btn-secondary">Cancelar</a>
 								<button type="submit" class="btn btn-primary px-4"
 									th:text="${servicio.idServicio != 0} ? 'Actualizar' : 'Guardar'">
 									Guardar</button>

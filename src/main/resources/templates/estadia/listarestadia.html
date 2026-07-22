@@ -110,14 +110,14 @@
 
 							<div class="modal-body px-4 pt-4">
 								<div class="row">
-									<div class="col-6 form-group mb-3">
+									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Huésped</label>
 										<select th:field="*{idHuesped}" class="form-select" required>
 											<option value="">Seleccione Huésped</option>
 											<option th:each="h : ${huespedes}" th:value="${h.idHuesped}" th:text="${h.nombre + ' ' + h.apellido}"></option>
 										</select>
 									</div>
-									<div class="col-6 form-group mb-3">
+									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Habitación</label>
 										<select th:field="*{idHabitacion}" class="form-select" required>
 											<option value="">Seleccione Habitación</option>
@@ -127,22 +127,22 @@
 								</div>
 
 								<div class="row">
-									<div class="col-6 form-group mb-3">
+									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Fecha Ingreso</label>
 										<input type="datetime-local" th:field="*{fechaIngreso}" class="form-control" required />
 									</div>
-									<div class="col-6 form-group mb-3">
+									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Fecha Salida</label>
 										<input type="datetime-local" th:field="*{fechaSalida}" class="form-control" required />
 									</div>
 								</div>
 
 								<div class="row">
-									<div class="col-6 form-group mb-3">
+									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Cantidad Huéspedes</label>
 										<input type="number" th:field="*{cantidadHuespedes}" class="form-control" required min="1" />
 									</div>
-									<div class="col-6 form-group mb-3">
+									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Total Pagar ($)</label>
 										<input type="number" step="0.01" th:field="*{totalPagar}" class="form-control" required min="0" />
 									</div>

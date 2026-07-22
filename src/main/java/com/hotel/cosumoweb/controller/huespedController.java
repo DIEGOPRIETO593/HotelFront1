@@ -25,8 +25,11 @@ import com.hotel.cosumoweb.services.IHuespedService;
 @RequestMapping("/huesped")
 public class huespedController {
 
-	@Autowired
-	private IHuespedService serviciohuesped;
+	private final IHuespedService serviciohuesped;
+
+	public huespedController(IHuespedService serviciohuesped) {
+		this.serviciohuesped = serviciohuesped;
+	}
 
 	@GetMapping
 	public String leerhuesped(Model model) {
@@ -54,7 +57,11 @@ public class huespedController {
 			serviciohuesped.guardarHuesped(request);
 			redirect.addFlashAttribute("message", crearMensaje("success", "Huésped procesado correctamente."));
 		} catch (WebClientResponseException e) {
-			redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
+			if (e.getStatusCode().value() == 409) {
+				redirect.addFlashAttribute("message", crearMensaje("warning", "La cédula ingresada ya existe en el sistema."));
+			} else {
+				redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
+			}
 		} catch (Exception e) {
 			redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error al guardar los datos."));
 		}

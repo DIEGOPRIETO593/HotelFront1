@@ -26,14 +26,15 @@ import com.hotel.cosumoweb.services.IEstadiaService;
 @RequestMapping("/detalle")
 public class DetalleController {
 
-	@Autowired
-	private IDetalleService servicioDetalle;
+	private final IDetalleService servicioDetalle;
+	private final IEstadiaService servicioEstadia;
+	private final ICatalogoService servicioCatalogo;
 
-	@Autowired
-	private IEstadiaService servicioEstadia;
-
-	@Autowired
-	private ICatalogoService servicioCatalogo;
+	public DetalleController(IDetalleService servicioDetalle, IEstadiaService servicioEstadia, ICatalogoService servicioCatalogo) {
+		this.servicioDetalle = servicioDetalle;
+		this.servicioEstadia = servicioEstadia;
+		this.servicioCatalogo = servicioCatalogo;
+	}
 
 	@GetMapping
 	public String leerDetalle(Model model) {

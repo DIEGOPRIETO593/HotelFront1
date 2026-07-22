@@ -25,8 +25,11 @@ import com.hotel.cosumoweb.services.ICatalogoService;
 @RequestMapping("/catalogo")
 public class CatalogoController {
 
-    @Autowired
-    private ICatalogoService Catalogo;
+    private final ICatalogoService Catalogo;
+
+    public CatalogoController(ICatalogoService Catalogo) {
+        this.Catalogo = Catalogo;
+    }
 
     @GetMapping
     public String leerCatalogo(Model model) {

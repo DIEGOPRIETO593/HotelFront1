@@ -25,8 +25,11 @@ import com.hotel.cosumoweb.services.IHabitacionService;
 @RequestMapping("/habitacion")
 public class habitacionController {
 
-	@Autowired
-	private IHabitacionService servicioHabitacion;
+	private final IHabitacionService servicioHabitacion;
+
+	public habitacionController(IHabitacionService servicioHabitacion) {
+		this.servicioHabitacion = servicioHabitacion;
+	}
 
 	@GetMapping
 	public String leerHabitacion(Model model) {

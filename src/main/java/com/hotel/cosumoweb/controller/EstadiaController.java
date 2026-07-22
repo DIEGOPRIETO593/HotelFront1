@@ -26,14 +26,15 @@ import com.hotel.cosumoweb.services.IHuespedService;
 @RequestMapping("/estadia")
 public class EstadiaController {
 
-    @Autowired
-    private IEstadiaService servicioEstadia;
+    private final IEstadiaService servicioEstadia;
+    private final IHuespedService servicioHuesped;
+    private final IHabitacionService servicioHabitacion;
 
-    @Autowired
-    private IHuespedService servicioHuesped;
-
-    @Autowired
-    private IHabitacionService servicioHabitacion;
+    public EstadiaController(IEstadiaService servicioEstadia, IHuespedService servicioHuesped, IHabitacionService servicioHabitacion) {
+        this.servicioEstadia = servicioEstadia;
+        this.servicioHuesped = servicioHuesped;
+        this.servicioHabitacion = servicioHabitacion;
+    }
 
     // 1. LISTAR PRINCIPAL
     @GetMapping
