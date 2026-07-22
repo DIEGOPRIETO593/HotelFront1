@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/plantillaui}">
+<head>
+<meta charset="UTF-8">
+<title>Habitaciones</title>
+</head>
+<body>
+
+	<div layout:fragment="contenidopaginas">
+		<div class="container-fluid py-2">
+
+			<div th:if="${message != null}"
+				th:classappend="${'alert-' + message.type}"
+				class="alert shadow-sm alert-dismissible fade show d-flex align-items-center"
+				role="alert">
+				<i class="fas me-2 fs-5"
+					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+				<div th:text="${message.text}">Texto del mensaje</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"
+					aria-label="Close"></button>
+			</div>
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h2 class="h3 fw-bold mb-0 text-primary">Gestión de Habitaciones</h2>
+					<p class="text-secondary small mb-0">Administra las habitaciones del hotel.</p>
+				</div>
+				<div class="d-flex gap-2">
+					<a th:href="@{/habitacion}"
+						class="btn btn-outline-secondary shadow-sm d-flex align-items-center">
+						<i class="fas fa-sync-alt me-1"></i> Refrescar
+					</a>
+
+					<button type="button"
+						class="btn btn-primary shadow-sm d-flex align-items-center"
+						data-bs-toggle="modal" data-bs-target="#habitacionModal"
+						data-toggle="modal" data-target="#habitacionModal">
+						<i class="fas fa-plus me-1"></i> Nueva Habitación
+					</button>
+				</div>
+			</div>
+
+			<div class="card shadow-sm border-0 rounded-4">
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light">
+								<tr>
+									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Número</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Estado</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Piso</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Estrellas</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Capacidad</th>
+									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+								</tr>
+							</thead>
+							<tbody class="border-top-0">
+								<tr th:each="h : ${habitaciones}">
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${h.idHabitacion}">#1</span></td>
+									<td class="fw-medium" th:text="${h.numero}">101</td>
+									<td th:text="${h.estado}">Disponible</td>
+									<td th:text="${h.piso}">1</td>
+									<td th:text="${h.estrellas}">3</td>
+									<td th:text="${h.capacidad}">2</td>
+									<td class="text-end pe-4">
+										<a th:href="@{/habitacion/editar/{id}(id=${h.idHabitacion})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
+											<i class="fas fa-pencil-alt"></i>
+										</a>
+										<a th:href="@{/habitacion/eliminar/{id}(id=${h.idHabitacion})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar esta habitación?');">
+											<i class="fas fa-trash"></i>
+										</a>
+									</td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(habitaciones)}">
+									<td colspan="7" class="text-center py-5 text-secondary">
+										<i class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>
+										<p class="fs-5 fw-medium mb-1">No hay habitaciones registradas</p>
+										<p class="small mb-0">Comienza agregando una nueva habitación al sistema.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="habitacionModal" tabindex="-1" role="dialog"
+				aria-labelledby="habitacionModalLabel" aria-hidden="true"
+				th:classappend="${showModal} ? 'show d-block' : ''">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content border-0 shadow-lg rounded-4">
+
+						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+							<h5 class="modal-title fw-bold text-primary" id="habitacionModalLabel"
+								th:text="${habitacion != null and habitacion.idHabitacion != 0} ? 'Editar Habitación #' + ${habitacion.idHabitacion} : 'Registrar Nueva Habitación'">
+								Registrar Nueva Habitación</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"
+								th:onclick="|window.location.href='/habitacion'|"></button>
+						</div>
+
+						<form th:action="@{/habitacion/guardar}" th:object="${habitacion}" method="post">
+
+							<input type="hidden" th:field="*{idHabitacion}" />
+
+							<div class="modal-body px-4 pt-4">
+								<div class="row">
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Número</label>
+										<input type="text" th:field="*{numero}" class="form-control" required />
+									</div>
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Estado</label>
+										<select th:field="*{estado}" class="form-select" required>
+											<option value="Disponible">Disponible</option>
+											<option value="Ocupada">Ocupada</option>
+											<option value="Mantenimiento">Mantenimiento</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-12 col-md-4 form-group mb-3">
+										<label class="form-label fw-semibold">Piso</label>
+										<input type="number" th:field="*{piso}" class="form-control" required min="1" />
+									</div>
+									<div class="col-12 col-md-4 form-group mb-3">
+										<label class="form-label fw-semibold">Estrellas</label>
+										<input type="number" th:field="*{estrellas}" class="form-control" required min="1" max="5" />
+									</div>
+									<div class="col-12 col-md-4 form-group mb-3">
+										<label class="form-label fw-semibold">Capacidad</label>
+										<input type="number" th:field="*{capacidad}" class="form-control" required min="1" />
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
+								<a th:href="@{/habitacion}" class="btn btn-secondary">Cancelar</a>
+								<button type="submit" class="btn btn-primary px-4"
+									th:text="${habitacion.idHabitacion != 0} ? 'Actualizar' : 'Guardar'">
+									Guardar</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+
+				<script th:inline="javascript">
+					document.addEventListener("DOMContentLoaded", function() {
+						/*[# th:if="${showModal}"]*/
+						if (typeof bootstrap !== 'undefined') {
+							var modal = new bootstrap.Modal(document.getElementById('habitacionModal'));
+							modal.show();
+						} else if (typeof $ !== 'undefined') {
+							$('#habitacionModal').modal('show');
+						}
+						/*[/]*/
+					});
+				</script>
+				<style>
+					.modal.show.d-block {
+						z-index: 1055 !important;
+						background-color: rgba(0, 0, 0, 0.5) !important;
+					}
+					.modal-backdrop {
+						display: none !important;
+					}
+				</style>
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

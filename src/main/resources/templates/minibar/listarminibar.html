@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/plantillaui}">
+<head>
+<meta charset="UTF-8">
+<title>Minibar</title>
+</head>
+<body>
+
+	<div layout:fragment="contenidopaginas">
+		<div class="container-fluid py-2">
+
+			<div th:if="${message != null}"
+				th:classappend="${'alert-' + message.type}"
+				class="alert shadow-sm alert-dismissible fade show d-flex align-items-center"
+				role="alert">
+				<i class="fas me-2 fs-5"
+					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+				<div th:text="${message.text}">Texto del mensaje</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"
+					aria-label="Close"></button>
+			</div>
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h2 class="h3 fw-bold mb-0 text-primary">Gestión de Minibar</h2>
+					<p class="text-secondary small mb-0">Administra los productos de los minibares.</p>
+				</div>
+				<div class="d-flex gap-2">
+					<a th:href="@{/minibar}"
+						class="btn btn-outline-secondary shadow-sm d-flex align-items-center">
+						<i class="fas fa-sync-alt me-1"></i> Refrescar
+					</a>
+
+					<button type="button"
+						class="btn btn-primary shadow-sm d-flex align-items-center"
+						data-bs-toggle="modal" data-bs-target="#minibarModal"
+						data-toggle="modal" data-target="#minibarModal">
+						<i class="fas fa-plus me-1"></i> Agregar a Minibar
+					</button>
+				</div>
+			</div>
+
+			<div class="card shadow-sm border-0 rounded-4">
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light">
+								<tr>
+									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación (ID)</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Producto (ID)</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cantidad</th>
+									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+								</tr>
+							</thead>
+							<tbody class="border-top-0">
+								<tr th:each="m : ${minibares}">
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${m.idMinibar}">#1</span></td>
+									<td class="fw-medium" th:text="${m.idHabitacion}">101</td>
+									<td th:text="${m.idProducto}">Coca Cola</td>
+									<td th:text="${m.cantidad}">5</td>
+									<td class="text-end pe-4">
+										<a th:href="@{/minibar/editar/{id}(id=${m.idMinibar})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
+											<i class="fas fa-pencil-alt"></i>
+										</a>
+										<a th:href="@{/minibar/eliminar/{id}(id=${m.idMinibar})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">
+											<i class="fas fa-trash"></i>
+										</a>
+									</td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(minibares)}">
+									<td colspan="5" class="text-center py-5 text-secondary">
+										<i class="fas fa-glass-martini-alt fa-3x d-block mb-3 opacity-50"></i>
+										<p class="fs-5 fw-medium mb-1">No hay registros de minibar</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="minibarModal" tabindex="-1" role="dialog"
+				aria-labelledby="minibarModalLabel" aria-hidden="true"
+				th:classappend="${showModal} ? 'show d-block' : ''">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content border-0 shadow-lg rounded-4">
+
+						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+							<h5 class="modal-title fw-bold text-primary" id="minibarModalLabel"
+								th:text="${minibar != null and minibar.idMinibar != 0} ? 'Editar Minibar #' + ${minibar.idMinibar} : 'Agregar a Minibar'">
+								Agregar a Minibar</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"
+								th:onclick="|window.location.href='/minibar'|"></button>
+						</div>
+
+						<form th:action="@{/minibar/guardar}" th:object="${minibar}" method="post">
+
+							<input type="hidden" th:field="*{idMinibar}" />
+
+							<div class="modal-body px-4 pt-4">
+								<div class="row">
+									<div class="col-12 form-group mb-3">
+										<label class="form-label fw-semibold">Habitación</label>
+										<select th:field="*{idHabitacion}" class="form-select" required>
+											<option th:each="h : ${habitacionesList}" th:value="${h.idHabitacion}" th:text="'Habitación ' + ${h.numero}"></option>
+										</select>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Producto</label>
+										<select th:field="*{idProducto}" class="form-select" required>
+											<option th:each="p : ${productosList}" th:value="${p.idProducto}" th:text="${p.nombre}"></option>
+										</select>
+									</div>
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Cantidad</label>
+										<input type="number" th:field="*{cantidad}" class="form-control" required min="1" />
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
+								<a th:href="@{/minibar}" class="btn btn-secondary">Cancelar</a>
+								<button type="submit" class="btn btn-primary px-4"
+									th:text="${minibar.idMinibar != 0} ? 'Actualizar' : 'Guardar'">
+									Guardar</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+				<script th:inline="javascript">
+					document.addEventListener("DOMContentLoaded", function() {
+						/*[# th:if="${showModal}"]*/
+						if (typeof bootstrap !== 'undefined') {
+							var modal = new bootstrap.Modal(document.getElementById('minibarModal'));
+							modal.show();
+						} else if (typeof $ !== 'undefined') {
+							$('#minibarModal').modal('show');
+						}
+						/*[/]*/
+					});
+				</script>
+				<style>
+					.modal.show.d-block { z-index: 1055 !important; background-color: rgba(0, 0, 0, 0.5) !important; }
+					.modal-backdrop { display: none !important; }
+				</style>
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>
+

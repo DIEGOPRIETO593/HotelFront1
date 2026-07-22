@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/plantillaui}">
+<head>
+<meta charset="UTF-8">
+<title>Huéspedes</title>
+</head>
+<body>
+
+	<div layout:fragment="contenidopaginas">
+		<div class="container-fluid py-2">
+
+			<div th:if="${message != null}"
+				th:classappend="${'alert-' + message.type}"
+				class="alert shadow-sm alert-dismissible fade show d-flex align-items-center"
+				role="alert">
+				<i class="fas me-2 fs-5"
+					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+				<div th:text="${message.text}">Texto del mensaje</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"
+					aria-label="Close"></button>
+			</div>
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h2 class="h3 fw-bold mb-0 text-primary">Gestión de Huéspedes</h2>
+					<p class="text-secondary small mb-0">Administra los huéspedes
+						registrados en el hotel.</p>
+				</div>
+				<div class="d-flex gap-2">
+					<a th:href="@{/huesped}"
+						class="btn btn-outline-secondary shadow-sm d-flex align-items-center">
+						<i class="fas fa-sync-alt me-1"></i> Refrescar
+					</a>
+
+					<button type="button"
+						class="btn btn-primary shadow-sm d-flex align-items-center"
+						data-bs-toggle="modal" data-bs-target="#huespedModal"
+						data-toggle="modal" data-target="#huespedModal">
+						<i class="fas fa-plus me-1"></i> Nuevo Huésped
+					</button>
+				</div>
+			</div>
+
+			<div class="card shadow-sm border-0 rounded-4">
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light">
+								<tr>
+									<th
+										class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start"
+										style="width: 80px;">ID</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cédula</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Nombre</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Apellido</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Teléfono</th>
+									<th
+										class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+								</tr>
+							</thead>
+							<tbody class="border-top-0">
+								<tr th:each="h : ${huespedes}">
+									<td class="ps-4"><span
+										class="badge bg-secondary rounded-pill shadow-sm"
+										th:text="'#' + ${h.idHuesped}">#1</span></td>
+									<td class="fw-medium" th:text="${h.cedula}">0000000000</td>
+									<td th:text="${h.nombre}">Nombre</td>
+									<td th:text="${h.apellido}">Apellido</td>
+									<td th:text="${h.telefono}">0999999999</td>
+									<td class="text-end pe-4"><a
+										th:href="@{/huesped/editar/{id}(id=${h.idHuesped})}"
+										class="btn btn-sm btn-outline-primary me-2 shadow-sm"
+										title="Editar"> <i class="fas fa-pencil-alt"></i>
+									</a> <a th:href="@{/huesped/eliminar/{id}(id=${h.idHuesped})}"
+										class="btn btn-sm btn-outline-danger shadow-sm"
+										title="Eliminar"
+										onclick="return confirm('¿Estás seguro de que deseas eliminar este huésped?');">
+											<i class="fas fa-trash"></i>
+									</a></td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(huespedes)}">
+									<td colspan="6" class="text-center py-5 text-secondary"><i
+										class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>
+										<p class="fs-5 fw-medium mb-1">No hay huéspedes
+											registrados</p>
+										<p class="small mb-0">Comienza agregando un nuevo huésped
+											al sistema.</p></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="huespedModal" tabindex="-1" role="dialog"
+				aria-labelledby="huespedModalLabel" aria-hidden="true"
+				th:classappend="${showModal} ? 'show d-block' : ''">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content border-0 shadow-lg rounded-4">
+
+						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+							<h5 class="modal-title fw-bold text-primary"
+								id="huespedModalLabel"
+								th:text="${huesped != null and huesped.idHuesped != null} ? 'Editar Huésped #' + ${huesped.idHuesped} : 'Registrar Nuevo Huésped'">
+								Registrar Nuevo Huésped</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"
+								th:onclick="|window.location.href='/huesped'|"></button>
+						</div>
+
+						<form th:action="@{/huesped/guardar}" th:object="${huesped}"
+							method="post">
+
+							<input type="hidden" th:field="*{idHuesped}" />
+
+							<div class="modal-body px-4 pt-4">
+								<div class="form-group mb-3">
+									<label class="form-label fw-semibold">Cédula</label> <input
+										type="text" th:field="*{cedula}" class="form-control" required />
+								</div>
+
+								<div class="row">
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Nombre</label> <input
+											type="text" th:field="*{nombre}" class="form-control"
+											required />
+									</div>
+
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Apellido</label> <input
+											type="text" th:field="*{apellido}" class="form-control"
+											required />
+									</div>
+								</div>
+
+								<div class="form-group mb-3">
+									<label class="form-label fw-semibold">Teléfono</label> <input
+										type="text" th:field="*{telefono}" class="form-control"
+										required />
+								</div>
+							</div>
+
+							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
+								<a th:href="@{/huesped}" class="btn btn-secondary">Cancelar</a>
+								<button type="submit" class="btn btn-primary px-4"
+									th:text="${huesped.idHuesped != null} ? 'Actualizar' : 'Guardar'">
+									Guardar</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+
+				<script th:inline="javascript">
+					document.addEventListener("DOMContentLoaded", function() {
+						/*[# th:if="${showModal}"]*/
+						// Intenta abrir con Bootstrap 5
+						if (typeof bootstrap !== 'undefined') {
+							var modal = new bootstrap.Modal(document
+									.getElementById('huespedModal'));
+							modal.show();
+						}
+						// Si usas jQuery / Bootstrap 4 (como Stisla)
+						else if (typeof $ !== 'undefined') {
+							$('#huespedModal').modal('show');
+						}
+						/*[/]*/
+					});
+				</script>
+				<style>
+/* Forzar que el modal quede por encima de la capa transparente */
+.modal.show.d-block {
+	z-index: 1055 !important;
+	background-color: rgba(0, 0, 0, 0.5) !important;
+}
+/* Ocultar cualquier fondo*/
+.modal-backdrop {
+	display: none !important;
+}
+</style>
+			</div>
+			<!-- --
+		
+		 -->
+
+
+		</div>
+	</div>
+
+</body>
+</html>
