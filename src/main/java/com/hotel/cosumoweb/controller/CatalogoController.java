@@ -25,37 +25,37 @@ import com.hotel.cosumoweb.services.ICatalogoService;
 @RequestMapping("/catalogo")
 public class CatalogoController {
 
-    private final ICatalogoService Catalogo;
+    private final ICatalogoService servicioCatalogo;
 
-    public CatalogoController(ICatalogoService Catalogo) {
-        this.Catalogo = Catalogo;
+    public CatalogoController(ICatalogoService servicioCatalogo) {
+        this.servicioCatalogo = servicioCatalogo;
     }
 
     @GetMapping
     public String leerCatalogo(Model model) {
-        List<CatalogoResponseDto> resultadoBD = Catalogo.listarTodos();
-        model.addAttribute("s", resultadoBD);
-        if (!model.containsAttribute("")) {
-            model.addAttribute("", new CatalogoRequestDto());
+        List<CatalogoResponseDto> resultadoBD = servicioCatalogo.listarTodos();
+        model.addAttribute("servicios", resultadoBD);
+        if (!model.containsAttribute("servicio")) {
+            model.addAttribute("servicio", new CatalogoRequestDto());
         }
         return "catalogo/listarcatalogo";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Validated @ModelAttribute("") CatalogoRequestDto request,
+    public String guardar(@Validated @ModelAttribute("servicio") CatalogoRequestDto request,
             BindingResult result,
             Model model,
             RedirectAttributes redirect) {
 
         if (result.hasErrors()) {
-            model.addAttribute("s", Catalogo.listarTodos());
+            model.addAttribute("servicios", servicioCatalogo.listarTodos());
             model.addAttribute("showModal", true);
             return "catalogo/listarcatalogo";
         }
 
         try {
-            Catalogo.guardar(request);
-            redirect.addFlashAttribute("message", crearMensaje("success", " procesado correctamente."));
+            servicioCatalogo.guardar(request);
+            redirect.addFlashAttribute("message", crearMensaje("success", "Servicio procesado correctamente."));
         } catch (WebClientResponseException e) {
             redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
         } catch (Exception e) {
@@ -68,20 +68,20 @@ public class CatalogoController {
     @GetMapping("/editar/{id}")
     public String editarCatalogo(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
         try {
-            CatalogoResponseDto dtoEncontrado = Catalogo.buscarPorId(id);
+            CatalogoResponseDto dtoEncontrado = servicioCatalogo.buscarPorId(id);
 
             CatalogoRequestDto Form = new CatalogoRequestDto();
             Form.setIdServicio(dtoEncontrado.getIdServicio());
             Form.setNombreServicio(dtoEncontrado.getNombreServicio());
             Form.setTarifa(dtoEncontrado.getTarifa());
 
-            model.addAttribute("s", Catalogo.listarTodos());
-            model.addAttribute("", Form);
+            model.addAttribute("servicios", servicioCatalogo.listarTodos());
+            model.addAttribute("servicio", Form);
             model.addAttribute("showModal", true);
 
             return "catalogo/listarcatalogo";
         } catch (Exception e) {
-            redirect.addFlashAttribute("message", crearMensaje("danger", "No se encontró el  a editar."));
+            redirect.addFlashAttribute("message", crearMensaje("danger", "No se encontró el servicio a editar."));
             return "redirect:/catalogo";
         }
     }
@@ -89,13 +89,13 @@ public class CatalogoController {
     @GetMapping("/eliminar/{id}")
     public String eliminarCatalogo(@PathVariable("id") Integer id, RedirectAttributes redirect) {
         try {
-            Catalogo.eliminar(id);
-            redirect.addFlashAttribute("message", crearMensaje("success", " eliminado exitosamente."));
+            servicioCatalogo.eliminar(id);
+            redirect.addFlashAttribute("message", crearMensaje("success", "Servicio eliminado exitosamente."));
         } catch (WebClientResponseException e) {
             redirect.addFlashAttribute("message",
-                crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar el . Verifique si tiene consumos asignados en estadías."));
+                crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar el servicio. Verifique si tiene consumos asignados en estadías."));
         } catch (Exception e) {
-            redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar el ."));
+            redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar el servicio."));
         }
         return "redirect:/catalogo";
     }
