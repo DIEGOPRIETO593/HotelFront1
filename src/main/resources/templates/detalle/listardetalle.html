@@ -59,8 +59,9 @@
 							<tbody class="border-top-0">
 								<tr th:each="d : ${detalles}">
 									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${d.idDetalle}">#1</span></td>
-									<td class="fw-medium" th:text="${d.idEstadia}">1</td>
-									<td th:text="${d.idServicio}">1</td>
+									<td class="fw-medium" th:text="${d.nombreHuesped}">Juan Perez</td>
+									<td th:text="${d.numeroHabitacion}">101</td>
+									<td th:text="${d.nombreServicio}">Spa</td>
 									<td th:text="${d.cantidad}">1</td>
 									<td th:text="'$' + ${d.subtotal}">$0.00</td>
 									<td class="text-end pe-4">
@@ -115,9 +116,9 @@
 									</div>
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Servicio</label>
-										<select th:field="*{idServicio}" class="form-select" required>
+										<select th:field="*{idServicio}" id="idServicio" class="form-select" required>
 											<option value="">Seleccione Servicio</option>
-											<option th:each="s : ${servicios}" th:value="${s.idServicio}" th:text="${s.nombreServicio}"></option>
+											<option th:each="s : ${servicios}" th:value="${s.idServicio}" th:text="${s.nombreServicio}" th:data-precio="${s.tarifa}"></option>
 										</select>
 									</div>
 								</div>
@@ -125,11 +126,11 @@
 								<div class="row">
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Cantidad</label>
-										<input type="number" th:field="*{cantidad}" class="form-control" required min="1" />
+										<input type="number" th:field="*{cantidad}" id="cantidad" class="form-control" required min="1" />
 									</div>
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Subtotal ($)</label>
-										<input type="number" step="0.01" th:field="*{subtotal}" class="form-control" required min="0" />
+										<input type="number" step="0.01" th:field="*{subtotal}" id="subtotal" class="form-control" required min="0" />
 									</div>
 								</div>
 							</div>
@@ -141,6 +142,31 @@
 									Guardar</button>
 							</div>
 						</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const servSelect = document.getElementById('idServicio');
+        const cantInput = document.getElementById('cantidad');
+        const subtotalInput = document.getElementById('subtotal');
+
+        function calcularTotalServicio() {
+            if (servSelect && cantInput && subtotalInput) {
+                if (servSelect.value && cantInput.value) {
+                    const selectedOption = servSelect.options[servSelect.selectedIndex];
+                    const tarifa = parseFloat(selectedOption.getAttribute('data-precio') || 0);
+                    const cantidad = parseInt(cantInput.value || 0);
+                    
+                    subtotalInput.value = (tarifa * cantidad).toFixed(2);
+                }
+            }
+        }
+
+        if(servSelect) servSelect.addEventListener('change', calcularTotalServicio);
+        if(cantInput) cantInput.addEventListener('input', calcularTotalServicio);
+    });
+</script>
+
+
 
 					</div>
 				</div>

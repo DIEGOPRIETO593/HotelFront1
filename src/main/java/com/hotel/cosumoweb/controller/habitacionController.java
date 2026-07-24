@@ -57,7 +57,17 @@ public class habitacionController {
 			servicioHabitacion.guardar(request);
 			redirect.addFlashAttribute("message", crearMensaje("success", "Habitación procesada correctamente."));
 		} catch (WebClientResponseException e) {
-			redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
+			String errorMsg = "Error en API Backend: " + e.getStatusCode();
+			String body = e.getResponseBodyAsString();
+			int idx = body.indexOf("\"message\":\"");
+			if (idx != -1) {
+				int start = idx + 11;
+				int end = body.indexOf("\"", start);
+				if (end != -1) {
+					errorMsg = body.substring(start, end);
+				}
+			}
+			redirect.addFlashAttribute("message", crearMensaje("danger", errorMsg));
 		} catch (Exception e) {
 			redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error al guardar los datos."));
 		}
@@ -95,8 +105,17 @@ public class habitacionController {
 			servicioHabitacion.eliminar(id);
 			redirect.addFlashAttribute("message", crearMensaje("success", "Habitación eliminada exitosamente."));
 		} catch (WebClientResponseException e) {
-			redirect.addFlashAttribute("message", 
-				crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar la habitación. Verifique si tiene estadías asociadas."));
+			String errorMsg = "Error en API Backend: " + e.getStatusCode();
+			String body = e.getResponseBodyAsString();
+			int idx = body.indexOf("\"message\":\"");
+			if (idx != -1) {
+				int start = idx + 11;
+				int end = body.indexOf("\"", start);
+				if (end != -1) {
+					errorMsg = body.substring(start, end);
+				}
+			}
+			redirect.addFlashAttribute("message", crearMensaje("danger", errorMsg));
 		} catch (Exception e) {
 			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar la habitación."));
 		}

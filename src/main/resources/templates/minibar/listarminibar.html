@@ -4,7 +4,7 @@
 	layout:decorate="~{plantilla/plantillaui}">
 <head>
 <meta charset="UTF-8">
-<title>Minibar</title>
+<title>Consumo</title>
 </head>
 <body>
 
@@ -12,11 +12,9 @@
 		<div class="container-fluid py-2">
 
 			<div th:if="${message != null}"
-				th:classappend="${'alert-' + message.type}"
+				th:classappend="${message.type == 'success' ? 'alert-success' : 'alert-danger'}"
 				class="alert shadow-sm alert-dismissible fade show d-flex align-items-center"
 				role="alert">
-				<i class="fas me-2 fs-5"
-					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
 				<div th:text="${message.text}">Texto del mensaje</div>
 				<button type="button" class="btn-close" data-bs-dismiss="alert"
 					aria-label="Close"></button>
@@ -24,7 +22,7 @@
 
 			<div class="d-flex justify-content-between align-items-center mb-4">
 				<div>
-					<h2 class="h3 fw-bold mb-0 text-primary">Gestión de Minibar</h2>
+					<h2 class="h3 fw-bold mb-0 text-primary">Gestión de Consumo</h2>
 					<p class="text-secondary small mb-0">Administra los productos de los minibares.</p>
 				</div>
 				<div class="d-flex gap-2">
@@ -35,9 +33,8 @@
 
 					<button type="button"
 						class="btn btn-primary shadow-sm d-flex align-items-center"
-						data-bs-toggle="modal" data-bs-target="#minibarModal"
-						data-toggle="modal" data-target="#minibarModal">
-						<i class="fas fa-plus me-1"></i> Agregar a Minibar
+						data-bs-toggle="modal" data-bs-target="#minibarModal" data-toggle="modal" data-target="#minibarModal">
+						<i class="fas fa-plus me-1"></i> Agregar a Consumo
 					</button>
 				</div>
 			</div>
@@ -49,31 +46,35 @@
 							<thead class="table-light">
 								<tr>
 									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación (ID)</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Producto (ID)</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Producto</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cantidad</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total</th>
 									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
 								</tr>
 							</thead>
 							<tbody class="border-top-0">
 								<tr th:each="m : ${minibares}">
-									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${m.idMinibar}">#1</span></td>
-									<td class="fw-medium" th:text="${m.idHabitacion}">101</td>
-									<td th:text="${m.idProducto}">Coca Cola</td>
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="${m.idMinibar}">#1</span></td>
+									<td class="fw-medium" th:text="${m.numeroHabitacion}">101</td>
+									<td th:text="${m.nombreProducto}">Coca Cola</td>
 									<td th:text="${m.cantidad}">5</td>
+									<td class="fw-bold text-success" th:text="'$' + ${m.total}"></td>
 									<td class="text-end pe-4">
+										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${m.idMinibar}" th:data-hab="${m.numeroHabitacion}" th:data-prod="${m.nombreProducto}" th:data-cant="${m.cantidad}" th:data-tot="${m.total}" onclick="verDetalleConsumo(this.getAttribute('data-id'), this.getAttribute('data-hab'), this.getAttribute('data-prod'), this.getAttribute('data-cant'), this.getAttribute('data-tot'))">
+											<i class="fas fa-eye"></i> Detalle
+										</button>
 										<a th:href="@{/minibar/editar/{id}(id=${m.idMinibar})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
-											<i class="fas fa-pencil-alt"></i>
+											<i class="fas fa-pencil-alt"></i> Editar
 										</a>
-										<a th:href="@{/minibar/eliminar/{id}(id=${m.idMinibar})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?');">
-											<i class="fas fa-trash"></i>
+										<a th:href="@{/minibar/eliminar/{id}(id=${m.idMinibar})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar?');">
+											<i class="fas fa-trash"></i> Eliminar
 										</a>
 									</td>
 								</tr>
 								<tr th:if="${#lists.isEmpty(minibares)}">
 									<td colspan="5" class="text-center py-5 text-secondary">
-										<i class="fas fa-glass-martini-alt fa-3x d-block mb-3 opacity-50"></i>
-										<p class="fs-5 fw-medium mb-1">No hay registros de minibar</p>
+										<p class="fs-5 fw-medium mb-1">No hay registros de consumo</p>
 									</td>
 								</tr>
 							</tbody>
@@ -82,19 +83,62 @@
 				</div>
 			</div>
 
-			<div class="modal fade" id="minibarModal" tabindex="-1" role="dialog"
+			<script>
+				function verDetalleConsumo(id, hab, prod, cant, total) {
+					document.getElementById('det-con-hab').innerText = hab;
+					document.getElementById('det-con-prod').innerText = prod;
+					document.getElementById('det-con-cant').innerText = cant + ' un.';
+					document.getElementById('det-con-total').innerText = '$' + parseFloat(total).toFixed(2);
+					$('#detalleConsumoModal').modal('show');
+					
+				}
+			</script>
+<div class="modal fade" id="detalleConsumoModal" tabindex="-1" aria-labelledby="detalleConsumoLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-sm">
+					<div class="modal-content rounded-4 shadow border-0">
+						<div class="modal-header bg-light border-bottom-0 pb-0 pt-4 px-4">
+							<h5 class="modal-title fw-bold text-dark"><i class="fas fa-receipt me-2 text-primary"></i>Cargo a Habitación</h5>
+							
+						</div>
+						<div class="modal-body px-4 pt-3 pb-4">
+							<div class="text-center mb-4">
+								<h2 class="display-5 fw-bold text-success mb-0" id="det-con-hab"></h2>
+								<span class="text-muted small text-uppercase fw-semibold">Habitación</span>
+							</div>
+							<div class="border-top border-bottom py-3 mb-3">
+								<div class="d-flex justify-content-between mb-1">
+									<span class="text-secondary fw-semibold">Producto:</span>
+									<span class="text-dark fw-bold text-end" id="det-con-prod"></span>
+								</div>
+								<div class="d-flex justify-content-between">
+									<span class="text-secondary fw-semibold">Cantidad:</span>
+									<span class="text-dark fw-bold" id="det-con-cant"></span>
+								</div>
+							</div>
+							<div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
+								<span class="fw-bold fs-6 text-dark text-uppercase">Total</span>
+								<span class="fw-bold fs-3 text-primary" id="det-con-total"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+
+</div>
+<div class="modal fade" id="minibarModal" tabindex="-1" role="dialog"
 				aria-labelledby="minibarModalLabel" aria-hidden="true"
-				th:classappend="${showModal} ? 'show d-block' : ''">
+				th:classappend="${showModal != null and showModal} ? 'show d-block' : ''">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content border-0 shadow-lg rounded-4">
 
 						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-							<h5 class="modal-title fw-bold text-primary" id="minibarModalLabel"
-								th:text="${minibar != null and minibar.idMinibar != 0} ? 'Editar Minibar #' + ${minibar.idMinibar} : 'Agregar a Minibar'">
-								Agregar a Minibar</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"
+							<h5 class="modal-title fw-bold text-primary" id="minibarModalLabel">
+								<span th:if="${minibar.idMinibar == 0}">Agregar a Consumo</span>
+								<span th:unless="${minibar.idMinibar == 0}">Editar Consumo</span>
+							</h5>
+							<button type="button" class="btn-close" data-dismiss="modal"
 								aria-label="Close"
-								th:onclick="|window.location.href='/minibar'|"></button>
+								onclick="window.location.href='/minibar'"></button>
 						</div>
 
 						<form th:action="@{/minibar/guardar}" th:object="${minibar}" method="post">
@@ -105,32 +149,55 @@
 								<div class="row">
 									<div class="col-12 form-group mb-3">
 										<label class="form-label fw-semibold">Habitación</label>
-										<select th:field="*{idHabitacion}" class="form-select" required>
-											<option th:each="h : ${habitacionesList}" th:value="${h.idHabitacion}" th:text="'Habitación ' + ${h.numero}"></option>
+										<select name="idHabitacion" th:value="*{idHabitacion}" class="form-select" required>
+											<option th:each="h : ${habitacionesList}" th:value="${h.idHabitacion}" th:text="${h.numero}" th:selected="${h.idHabitacion == minibar.idHabitacion}"></option>
 										</select>
 									</div>
 								</div>
 								<div class="row">
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Producto</label>
-										<select th:field="*{idProducto}" class="form-select" required>
-											<option th:each="p : ${productosList}" th:value="${p.idProducto}" th:text="${p.nombre}"></option>
+										<select name="idProducto" th:value="*{idProducto}" class="form-select" required>
+											<option th:each="p : ${productosList}" th:value="${p.idProducto}" th:text="${p.nombre}" th:selected="${p.idProducto == minibar.idProducto}" th:data-precio="${p.precio}"></option>
 										</select>
 									</div>
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Cantidad</label>
-										<input type="number" th:field="*{cantidad}" class="form-control" required min="1" />
+										<input type="number" th:field="*{cantidad}" id="cantidad" class="form-control" required min="1" />
 									</div>
 								</div>
 							</div>
 
 							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
 								<a th:href="@{/minibar}" class="btn btn-secondary">Cancelar</a>
-								<button type="submit" class="btn btn-primary px-4"
-									th:text="${minibar.idMinibar != 0} ? 'Actualizar' : 'Guardar'">
-									Guardar</button>
+								<button type="submit" class="btn btn-primary px-4">Guardar</button>
 							</div>
 						</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const prodSelect = document.getElementById('idProducto');
+        const cantInput = document.getElementById('cantidad');
+        const totalInput = document.getElementById('total');
+
+        function calcularTotalMinibar() {
+            if (prodSelect && cantInput && totalInput) {
+                if (prodSelect.value && cantInput.value) {
+                    const selectedOption = prodSelect.options[prodSelect.selectedIndex];
+                    const precio = parseFloat(selectedOption.getAttribute('data-precio') || 0);
+                    const cantidad = parseInt(cantInput.value || 0);
+                    
+                    totalInput.value = (precio * cantidad).toFixed(2);
+                }
+            }
+        }
+
+        if(prodSelect) prodSelect.addEventListener('change', calcularTotalMinibar);
+        if(cantInput) cantInput.addEventListener('input', calcularTotalMinibar);
+    });
+</script>
+
+
 
 					</div>
 				</div>
@@ -154,6 +221,12 @@
 
 		</div>
 	</div>
+
+			<!-- Modal Factura Minibar/Consumo -->
+			
+
+			
+
 </body>
 </html>
 

@@ -78,7 +78,7 @@ public class DetalleController {
 			detalleForm.setIdEstadia(dtoEncontrado.getIdEstadia());
 			detalleForm.setIdServicio(dtoEncontrado.getIdServicio());
 			detalleForm.setCantidad(dtoEncontrado.getCantidad());
-			detalleForm.setSubtotal(dtoEncontrado.getSubtotal());
+			detalleForm.setTotal(dtoEncontrado.getTotal());
 
 			cargarListasModel(model);
 			model.addAttribute("detalle", detalleForm);

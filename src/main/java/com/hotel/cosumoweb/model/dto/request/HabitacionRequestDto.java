@@ -1,7 +1,5 @@
 package com.hotel.cosumoweb.model.dto.request;
 
-
-
 public class HabitacionRequestDto {
     private int idHabitacion;
     private String numero;
@@ -9,6 +7,7 @@ public class HabitacionRequestDto {
     private int piso;
     private int estrellas;
     private int capacidad;
+    private Double precio;
 
     public int getIdHabitacion() {
         return idHabitacion;
@@ -56,5 +55,13 @@ public class HabitacionRequestDto {
 
     public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(Double precio) {
+        this.precio = precio;
     }
 }

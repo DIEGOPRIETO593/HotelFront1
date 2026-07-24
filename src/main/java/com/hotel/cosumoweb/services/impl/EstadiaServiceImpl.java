@@ -29,8 +29,13 @@ public class EstadiaServiceImpl implements IEstadiaService {
 
 	@Override
 	public EstadiaResponseDto guardar(EstadiaRequestDto request) {
-		return webClient.post().uri("/estadia").bodyValue(request).retrieve().bodyToMono(EstadiaResponseDto.class)
-				.block();
+		if (request.getIdEstadia() > 0) {
+			return webClient.put().uri("/estadia/{id}", request.getIdEstadia()).bodyValue(request).retrieve()
+					.bodyToMono(EstadiaResponseDto.class).block();
+		} else {
+			return webClient.post().uri("/estadia").bodyValue(request).retrieve().bodyToMono(EstadiaResponseDto.class)
+					.block();
+		}
 	}
 
 	@Override

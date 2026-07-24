@@ -31,8 +31,12 @@ public class HabitacionServiceImpl implements IHabitacionService {
 
 	@Override
 	public HabitacionResponseDto guardar(HabitacionRequestDto request) {
-		return webClient.post().uri("/habitacion").bodyValue(request).retrieve().bodyToMono(HabitacionResponseDto.class)
-				.block();
+		if (request.getIdHabitacion() > 0) {
+			webClient.put().uri("/habitacion/" + request.getIdHabitacion()).bodyValue(request).retrieve().toBodilessEntity().block();
+		} else {
+			webClient.post().uri("/habitacion").bodyValue(request).retrieve().toBodilessEntity().block();
+		}
+		return null;
 	}
 
 	@Override

@@ -12,5 +12,7 @@ public class DetalleResponseDto {
     private String nombreServicio;
     
     private int cantidad;
-    private BigDecimal subtotal;
+    private BigDecimal total;
+    private String numeroHabitacion;
+    private String nombreHuesped;
 }

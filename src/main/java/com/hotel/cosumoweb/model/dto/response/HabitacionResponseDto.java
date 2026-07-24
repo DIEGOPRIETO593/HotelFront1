@@ -10,6 +10,7 @@ public class HabitacionResponseDto {
 	private int piso;
 	private int estrellas;
 	private int capacidad;
+    private Double precio;
 
    
 }

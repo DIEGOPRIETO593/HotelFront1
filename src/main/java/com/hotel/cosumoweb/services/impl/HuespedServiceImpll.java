@@ -48,11 +48,20 @@ public class HuespedServiceImpll implements IHuespedService {
 
 	@Override
 	public void guardarHuesped(HuespedRequestDto nuevo) {
-		webClient.post()
-				.uri("/huesped")
-				.bodyValue(nuevo)
-				.retrieve()
-				.toBodilessEntity()
-				.block();
+		if (nuevo.getIdHuesped() > 0) {
+			webClient.put()
+					.uri("/huesped/" + nuevo.getIdHuesped())
+					.bodyValue(nuevo)
+					.retrieve()
+					.toBodilessEntity()
+					.block();
+		} else {
+			webClient.post()
+					.uri("/huesped")
+					.bodyValue(nuevo)
+					.retrieve()
+					.toBodilessEntity()
+					.block();
+		}
 	}
 }

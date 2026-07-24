@@ -49,8 +49,8 @@
 							<thead class="table-light">
 								<tr>
 									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">ID Huésped</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">ID Habitación</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Huésped</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Fecha Ingreso</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Fecha Salida</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cant. Huéspedes</th>
@@ -61,13 +61,16 @@
 							<tbody class="border-top-0">
 								<tr th:each="e : ${estadias}">
 									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${e.idEstadia}">#1</span></td>
-									<td class="fw-medium" th:text="${e.idHuesped}">1</td>
-									<td th:text="${e.idHabitacion}">1</td>
+									<td class="fw-medium text-primary"><i class="fas fa-user-circle me-1 text-secondary"></i><span th:text="${e.nombreHuesped}"></span></td>
+									<td class="fw-medium text-success"><i class="fas fa-door-closed me-1 text-secondary"></i><span th:text="${e.numeroHabitacion}"></span></td>
 									<td th:text="${e.fechaIngreso}">2026-01-01T12:00</td>
 									<td th:text="${e.fechaSalida}">2026-01-05T12:00</td>
 									<td th:text="${e.cantidadHuespedes}">2</td>
 									<td th:text="'$' + ${e.totalPagar}">$100.00</td>
 									<td class="text-end pe-4">
+										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${e.idEstadia}" th:data-huesped="${e.nombreHuesped}" th:data-hab="${e.numeroHabitacion}" th:data-in="${e.fechaIngreso}" th:data-out="${e.fechaSalida}" th:data-cant="${e.cantidadHuespedes}" th:data-tot="${e.totalPagar}" onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'))">
+											<i class="fas fa-eye"></i>
+										</button>
 										<a th:href="@{/estadia/editar/{id}(id=${e.idEstadia})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
 											<i class="fas fa-pencil-alt"></i>
 										</a>
@@ -89,7 +92,68 @@
 				</div>
 			</div>
 
-			<div class="modal fade" id="estadiaModal" tabindex="-1" role="dialog"
+			<script>
+				function verDetalleEstadia(id, huesped, hab, ingreso, salida, cant, total) {
+					document.getElementById('det-est-huesped').innerText = huesped;
+					document.getElementById('det-est-hab').innerText = hab;
+					document.getElementById('det-est-ingreso').innerText = ingreso.replace('T', ' ');
+					document.getElementById('det-est-salida').innerText = salida.replace('T', ' ');
+					document.getElementById('det-est-cant').innerText = cant;
+					document.getElementById('det-est-total').innerText = '$' + parseFloat(total).toFixed(2);
+					$('#detalleEstadiaModal').modal('show');
+					
+				}
+			</script>
+<div class="modal fade" id="detalleEstadiaModal" tabindex="-1" aria-labelledby="detalleEstadiaLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content rounded-4 shadow border-0">
+						<div class="modal-header bg-light border-bottom-0 pb-0 pt-4 px-4">
+							<h5 class="modal-title fw-bold text-dark"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Detalle de Estadía</h5>
+							
+						</div>
+						<div class="modal-body px-4 pt-3 pb-4">
+							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
+								<h6 class="text-muted mb-3 text-uppercase small fw-bold border-bottom pb-2">Información del Cliente</h6>
+								<div class="d-flex justify-content-between mb-2">
+									<span class="text-secondary">A nombre de:</span>
+									<span class="fw-semibold text-dark" id="det-est-huesped"></span>
+								</div>
+								<div class="d-flex justify-content-between mb-2">
+									<span class="text-secondary">Habitación:</span>
+									<span class="fw-bold text-success" id="det-est-hab"></span>
+								</div>
+								<div class="d-flex justify-content-between">
+									<span class="text-secondary">Cant. Huéspedes:</span>
+									<span class="fw-semibold text-dark" id="det-est-cant"></span>
+								</div>
+							</div>
+							<div class="border rounded-3 p-3 bg-white shadow-sm">
+								<h6 class="text-muted mb-3 text-uppercase small fw-bold border-bottom pb-2">Resumen de Cuenta</h6>
+								<div class="d-flex justify-content-between mb-2">
+									<span class="text-secondary">Check-in:</span>
+									<span class="fw-semibold text-dark" id="det-est-ingreso"></span>
+								</div>
+								<div class="d-flex justify-content-between mb-3">
+									<span class="text-secondary">Check-out:</span>
+									<span class="fw-semibold text-dark" id="det-est-salida"></span>
+								</div>
+								<div class="d-flex justify-content-between align-items-center pt-2 border-top">
+									<span class="fw-bold fs-5 text-dark">TOTAL PAGAR</span>
+									<span class="fw-bold fs-4 text-primary" id="det-est-total"></span>
+								</div>
+							</div>
+						</div>
+<div class="modal-footer border-top-0 px-4 pb-4 pt-0">
+<button type="button" class="btn btn-secondary w-100" onclick="$('#detalleEstadiaModal').modal('hide');">Cerrar Detalle</button>
+</div>
+
+						
+					</div>
+				</div>
+			
+
+</div>
+<div class="modal fade" id="estadiaModal" tabindex="-1" role="dialog"
 				aria-labelledby="estadiaModalLabel" aria-hidden="true"
 				th:classappend="${showModal} ? 'show d-block' : ''">
 				<div class="modal-dialog modal-dialog-centered">
@@ -99,9 +163,9 @@
 							<h5 class="modal-title fw-bold text-primary" id="estadiaModalLabel"
 								th:text="${estadia != null and estadia.idEstadia != 0} ? 'Editar Estadía #' + ${estadia.idEstadia} : 'Registrar Nueva Estadía'">
 								Registrar Nueva Estadía</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"
+							<button type="button" class="btn-close" data-dismiss="modal"
 								aria-label="Close"
-								th:onclick="|window.location.href='/estadia'|"></button>
+								onclick="window.location.href='/estadia'"></button>
 						</div>
 
 						<form th:action="@{/estadia/guardar}" th:object="${estadia}" method="post">
@@ -111,17 +175,17 @@
 							<div class="modal-body px-4 pt-4">
 								<div class="row">
 									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Huésped</label>
+										<label class="form-label fw-semibold text-primary"><i class="fas fa-user-circle me-1"></i>Huésped</label>
 										<select th:field="*{idHuesped}" class="form-select" required>
 											<option value="">Seleccione Huésped</option>
 											<option th:each="h : ${huespedes}" th:value="${h.idHuesped}" th:text="${h.nombre + ' ' + h.apellido}"></option>
 										</select>
 									</div>
 									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Habitación</label>
+										<label class="form-label fw-semibold text-success"><i class="fas fa-door-closed me-1"></i>Habitación</label>
 										<select th:field="*{idHabitacion}" class="form-select" required>
 											<option value="">Seleccione Habitación</option>
-											<option th:each="hab : ${habitaciones}" th:value="${hab.idHabitacion}" th:text="'Hab. ' + ${hab.numero}"></option>
+											<option th:each="hab : ${habitaciones}" th:value="${hab.idHabitacion}" th:text="'Hab. ' + ${hab.numero}" th:data-precio="${hab.precio}"></option>
 										</select>
 									</div>
 								</div>
@@ -157,6 +221,42 @@
 							</div>
 						</form>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const habSelect = document.getElementById('idHabitacion');
+        const fIngreso = document.getElementById('fechaIngreso');
+        const fSalida = document.getElementById('fechaSalida');
+        const totalInput = document.getElementById('totalPagar');
+
+        function calcularTotal() {
+            if (habSelect && fIngreso && fSalida && totalInput) {
+                if (habSelect.value && fIngreso.value && fSalida.value) {
+                    const selectedOption = habSelect.options[habSelect.selectedIndex];
+                    const precio = parseFloat(selectedOption.getAttribute('data-precio') || 0);
+                    
+                    const d1 = new Date(fIngreso.value);
+                    const d2 = new Date(fSalida.value);
+                    
+                    if (d2 > d1) {
+                        const diffTime = Math.abs(d2 - d1);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        const noches = diffDays > 0 ? diffDays : 1;
+                        totalInput.value = (noches * precio).toFixed(2);
+                    } else {
+                        totalInput.value = '0.00';
+                    }
+                }
+            }
+        }
+
+        if(habSelect) habSelect.addEventListener('change', calcularTotal);
+        if(fIngreso) fIngreso.addEventListener('change', calcularTotal);
+        if(fSalida) fSalida.addEventListener('change', calcularTotal);
+    });
+</script>
+
+
+
 					</div>
 				</div>
 
@@ -186,5 +286,11 @@
 		</div>
 	</div>
 
+
+			<!-- Modal Factura Estadia -->
+			
+
+			
+    
 </body>
 </html>

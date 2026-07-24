@@ -12,11 +12,9 @@
 		<div class="container-fluid py-2">
 
 			<div th:if="${message != null}"
-				th:classappend="${'alert-' + message.type}"
+				th:classappend="${message.type == 'success' ? 'alert-success' : 'alert-danger'}"
 				class="alert shadow-sm alert-dismissible fade show d-flex align-items-center"
 				role="alert">
-				<i class="fas me-2 fs-5"
-					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
 				<div th:text="${message.text}">Texto del mensaje</div>
 				<button type="button" class="btn-close" data-bs-dismiss="alert"
 					aria-label="Close"></button>
@@ -35,8 +33,8 @@
 
 					<button type="button"
 						class="btn btn-primary shadow-sm d-flex align-items-center"
-						data-bs-toggle="modal" data-bs-target="#productoModal"
-						data-toggle="modal" data-target="#productoModal">
+						data-toggle="modal" data-target="#productoModal"
+						data-bs-toggle="modal" data-bs-target="#productoModal">
 						<i class="fas fa-plus me-1"></i> Nuevo Producto
 					</button>
 				</div>
@@ -57,22 +55,21 @@
 							</thead>
 							<tbody class="border-top-0">
 								<tr th:each="p : ${productos}">
-									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${p.idProducto}">#1</span></td>
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="${p.idProducto}">#1</span></td>
 									<td class="fw-medium" th:text="${p.nombre}">Coca Cola</td>
 									<td th:text="${'$' + p.precio}">$2.50</td>
 									<td th:text="${p.stock}">50</td>
 									<td class="text-end pe-4">
 										<a th:href="@{/producto/editar/{id}(id=${p.idProducto})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
-											<i class="fas fa-pencil-alt"></i>
+											<i class="fas fa-pencil-alt"></i> Editar
 										</a>
 										<a th:href="@{/producto/eliminar/{id}(id=${p.idProducto})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
-											<i class="fas fa-trash"></i>
+											<i class="fas fa-trash"></i> Eliminar
 										</a>
 									</td>
 								</tr>
 								<tr th:if="${#lists.isEmpty(productos)}">
 									<td colspan="5" class="text-center py-5 text-secondary">
-										<i class="fas fa-box-open fa-3x d-block mb-3 opacity-50"></i>
 										<p class="fs-5 fw-medium mb-1">No hay productos registrados</p>
 									</td>
 								</tr>
@@ -84,14 +81,15 @@
 
 			<div class="modal fade" id="productoModal" tabindex="-1" role="dialog"
 				aria-labelledby="productoModalLabel" aria-hidden="true"
-				th:classappend="${showModal} ? 'show d-block' : ''">
+				th:classappend="${showModal != null and showModal} ? 'show d-block' : ''">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content border-0 shadow-lg rounded-4">
 
 						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-							<h5 class="modal-title fw-bold text-primary" id="productoModalLabel"
-								th:text="${producto != null and producto.idProducto != 0} ? 'Editar Producto #' + ${producto.idProducto} : 'Registrar Nuevo Producto'">
-								Registrar Nuevo Producto</h5>
+							<h5 class="modal-title fw-bold text-primary" id="productoModalLabel">
+								<span th:if="${producto.idProducto == 0}">Registrar Nuevo Producto</span>
+								<span th:unless="${producto.idProducto == 0}">Editar Producto</span>
+							</h5>
 							<button type="button" class="btn-close" data-bs-dismiss="modal"
 								aria-label="Close"
 								th:onclick="|window.location.href='/producto'|"></button>
@@ -105,26 +103,24 @@
 								<div class="row">
 									<div class="col-12 form-group mb-3">
 										<label class="form-label fw-semibold">Nombre</label>
-										<input type="text" th:field="*{nombre}" class="form-control" required />
+										<input type="text" name="nombre" th:value="*{nombre}" class="form-control" required />
 									</div>
 								</div>
 								<div class="row">
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Precio</label>
-										<input type="number" step="0.01" th:field="*{precio}" class="form-control" required />
+										<input type="number" step="0.01" name="precio" th:value="*{precio}" class="form-control" required />
 									</div>
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Stock</label>
-										<input type="number" th:field="*{stock}" class="form-control" required min="0" />
+										<input type="number" name="stock" th:value="*{stock}" class="form-control" required min="0" />
 									</div>
 								</div>
 							</div>
 
 							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
 								<a th:href="@{/producto}" class="btn btn-secondary">Cancelar</a>
-								<button type="submit" class="btn btn-primary px-4"
-									th:text="${producto.idProducto != 0} ? 'Actualizar' : 'Guardar'">
-									Guardar</button>
+								<button type="submit" class="btn btn-primary px-4">Guardar</button>
 							</div>
 						</form>
 

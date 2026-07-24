@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class EstadiaRequestDto {
-    private int idEstadia;
-    private int idHuesped;
-    private int idHabitacion;
+    private Integer idEstadia = 0;
+    private Integer idHuesped;
+    private Integer idHabitacion;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaIngreso;
@@ -17,6 +17,6 @@ public class EstadiaRequestDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaSalida;
 
-    private int cantidadHuespedes;
+    private Integer cantidadHuespedes;
     private BigDecimal totalPagar;
 }

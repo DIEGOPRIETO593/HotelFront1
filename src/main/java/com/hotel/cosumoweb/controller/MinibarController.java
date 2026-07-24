@@ -1,4 +1,5 @@
 package com.hotel.cosumoweb.controller;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +53,18 @@ public class MinibarController {
             servicio.guardar(request);
             redirect.addFlashAttribute("message", crearMensaje("success", "Minibar procesado correctamente."));
         } catch (WebClientResponseException e) {
-            redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API: " + e.getStatusCode()));
-        } catch (Exception e) {
+			String errorMsg = "Error en API Backend: " + e.getStatusCode();
+			String body = e.getResponseBodyAsString();
+			int idx = body.indexOf("\"message\":\"");
+			if (idx != -1) {
+				int start = idx + 11;
+				int end = body.indexOf("\"", start);
+				if (end != -1) {
+					errorMsg = body.substring(start, end);
+				}
+			}
+			redirect.addFlashAttribute("message", crearMensaje("danger", errorMsg));
+		} catch (Exception e) {
             redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error."));
         }
         return "redirect:/minibar";
