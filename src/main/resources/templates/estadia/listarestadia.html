@@ -55,7 +55,7 @@
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Fecha Salida</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cant. Huéspedes</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total a Pagar</th>
-									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+									
 								</tr>
 							</thead>
 							<tbody class="border-top-0">
@@ -67,18 +67,7 @@
 									<td th:text="${e.fechaSalida}">2026-01-05T12:00</td>
 									<td th:text="${e.cantidadHuespedes}">2</td>
 									<td th:text="'$' + ${e.totalPagar}">$100.00</td>
-									<td class="text-end pe-4">
-										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${e.idEstadia}" th:data-huesped="${e.nombreHuesped}" th:data-hab="${e.numeroHabitacion}" th:data-in="${e.fechaIngreso}" th:data-out="${e.fechaSalida}" th:data-cant="${e.cantidadHuespedes}" th:data-tot="${e.totalPagar}" onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'))">
-											<i class="fas fa-eye"></i>
-										</button>
-										<a th:href="@{/estadia/editar/{id}(id=${e.idEstadia})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
-											<i class="fas fa-pencil-alt"></i>
-										</a>
-										<a th:href="@{/estadia/eliminar/{id}(id=${e.idEstadia})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar esta estadía?');">
-											<i class="fas fa-trash"></i>
-										</a>
-									</td>
-								</tr>
+									</tr>
 								<tr th:if="${#lists.isEmpty(estadias)}">
 									<td colspan="8" class="text-center py-5 text-secondary">
 										<i class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>

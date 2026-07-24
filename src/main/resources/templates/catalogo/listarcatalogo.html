@@ -48,7 +48,7 @@
 									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Nombre Servicio</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Tarifa</th>
-									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+									
 								</tr>
 							</thead>
 							<tbody class="border-top-0">
@@ -56,15 +56,7 @@
 									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="${s.idServicio}">#1</span></td>
 									<td class="fw-medium" th:text="${s.nombreServicio}">Servicio</td>
 									<td th:text="${s.tarifa}">0.00</td>
-									<td class="text-end pe-4">
-										<a th:href="@{/catalogo/editar/{id}(id=${s.idServicio})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
-											<i class="fas fa-pencil-alt"></i> Editar
-										</a>
-										<a th:href="@{/catalogo/eliminar/{id}(id=${s.idServicio})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar?');">
-											<i class="fas fa-trash"></i> Eliminar
-										</a>
-									</td>
-								</tr>
+									</tr>
 								<tr th:if="${#lists.isEmpty(servicios)}">
 									<td colspan="4" class="text-center py-5 text-secondary">
 										<p class="fs-5 fw-medium mb-1">No hay servicios registrados</p>

@@ -53,7 +53,7 @@
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">ID Servicio</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cantidad</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Subtotal</th>
-									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+									
 								</tr>
 							</thead>
 							<tbody class="border-top-0">
@@ -64,15 +64,7 @@
 									<td th:text="${d.nombreServicio}">Spa</td>
 									<td th:text="${d.cantidad}">1</td>
 									<td th:text="'$' + ${d.subtotal}">$0.00</td>
-									<td class="text-end pe-4">
-										<a th:href="@{/detalle/editar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
-											<i class="fas fa-pencil-alt"></i>
-										</a>
-										<a th:href="@{/detalle/eliminar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este detalle?');">
-											<i class="fas fa-trash"></i>
-										</a>
-									</td>
-								</tr>
+									</tr>
 								<tr th:if="${#lists.isEmpty(detalles)}">
 									<td colspan="6" class="text-center py-5 text-secondary">
 										<i class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>
