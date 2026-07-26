@@ -41,6 +41,65 @@ public class CatalogoController {
         return "catalogo/listarcatalogo";
     }
 
+    @PostMapping("/guardar")
+    public String guardar(@Validated @ModelAttribute("servicio") CatalogoRequestDto request,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirect) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("servicios", servicioCatalogo.listarTodos());
+            model.addAttribute("showModal", true);
+            return "catalogo/listarcatalogo";
+        }
+
+        try {
+            servicioCatalogo.guardar(request);
+            redirect.addFlashAttribute("message", crearMensaje("success", "Servicio procesado correctamente."));
+        } catch (WebClientResponseException e) {
+            redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
+        } catch (Exception e) {
+            redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error al guardar los datos."));
+        }
+
+        return "redirect:/catalogo";
+    }
+
+    @GetMapping("/editar/{id}")
+    public String editarCatalogo(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
+        try {
+            CatalogoResponseDto dtoEncontrado = servicioCatalogo.buscarPorId(id);
+
+            CatalogoRequestDto Form = new CatalogoRequestDto();
+            Form.setIdServicio(dtoEncontrado.getIdServicio());
+            Form.setNombreServicio(dtoEncontrado.getNombreServicio());
+            Form.setTarifa(dtoEncontrado.getTarifa());
+
+            model.addAttribute("servicios", servicioCatalogo.listarTodos());
+            model.addAttribute("servicio", Form);
+            model.addAttribute("showModal", true);
+
+            return "catalogo/listarcatalogo";
+        } catch (Exception e) {
+            redirect.addFlashAttribute("message", crearMensaje("danger", "No se encontró el servicio a editar."));
+            return "redirect:/catalogo";
+        }
+    }
+
+    @GetMapping("/eliminar/{id}")
+    public String eliminarCatalogo(@PathVariable("id") Integer id, RedirectAttributes redirect) {
+        try {
+            servicioCatalogo.eliminar(id);
+            redirect.addFlashAttribute("message", crearMensaje("success", "Servicio eliminado exitosamente."));
+        } catch (WebClientResponseException e) {
+            redirect.addFlashAttribute("message",
+                crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar el servicio. Verifique si tiene consumos asignados en estadías."));
+        } catch (Exception e) {
+            redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar el servicio."));
+        }
+        return "redirect:/catalogo";
+    }
+
     private Map<String, String> crearMensaje(String type, String text) {
         Map<String, String> msg = new HashMap<>();
         msg.put("type", type);

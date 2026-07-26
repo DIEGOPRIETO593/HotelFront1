@@ -45,6 +45,66 @@ public class DetalleController {
 		return "detalle/listardetalle";
 	}
 
+	@PostMapping("/guardar")
+	public String guardar(@Validated @ModelAttribute("detalle") DetalleRequestDto request, BindingResult result,
+			Model model, RedirectAttributes redirect) {
+
+		if (result.hasErrors()) {
+			cargarListasModel(model);
+			model.addAttribute("showModal", true);
+			return "detalle/listardetalle";
+		}
+
+		try {
+			servicioDetalle.guardar(request);
+			redirect.addFlashAttribute("message",
+					crearMensaje("success", "Detalle de servicio guardado correctamente."));
+		} catch (WebClientResponseException e) {
+			redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
+		} catch (Exception e) {
+			redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error al guardar los datos."));
+		}
+
+		return "redirect:/detalle";
+	}
+
+	@GetMapping("/editar/{id}")
+	public String editarDetalle(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
+		try {
+			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
+
+			DetalleRequestDto detalleForm = new DetalleRequestDto();
+			detalleForm.setIdDetalle(dtoEncontrado.getIdDetalle());
+			detalleForm.setIdEstadia(dtoEncontrado.getIdEstadia());
+			detalleForm.setIdServicio(dtoEncontrado.getIdServicio());
+			detalleForm.setCantidad(dtoEncontrado.getCantidad());
+			detalleForm.setTotal(dtoEncontrado.getTotal());
+
+			cargarListasModel(model);
+			model.addAttribute("detalle", detalleForm);
+			model.addAttribute("showModal", true);
+
+			return "detalle/listardetalle";
+		} catch (Exception e) {
+			redirect.addFlashAttribute("message", crearMensaje("danger", "No se encontró el detalle a editar."));
+			return "redirect:/detalle";
+		}
+	}
+
+	@GetMapping("/eliminar/{id}")
+	public String eliminarDetalle(@PathVariable("id") Integer id, RedirectAttributes redirect) {
+		try {
+			servicioDetalle.eliminar(id);
+			redirect.addFlashAttribute("message", crearMensaje("success", "Detalle eliminado exitosamente."));
+		} catch (WebClientResponseException e) {
+			redirect.addFlashAttribute("message",
+					crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar el detalle."));
+		} catch (Exception e) {
+			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar el detalle."));
+		}
+		return "redirect:/detalle";
+	}
+
 	private void cargarListasModel(Model model) {
 		model.addAttribute("detalles", servicioDetalle.listarTodos());
 		model.addAttribute("estadias", servicioEstadia.listarTodos());
