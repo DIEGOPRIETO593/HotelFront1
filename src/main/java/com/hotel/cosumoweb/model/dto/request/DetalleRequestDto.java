@@ -9,5 +9,5 @@ public class DetalleRequestDto {
     private int idEstadia;
     private int idServicio;
     private int cantidad;
-    private BigDecimal subtotal;
+    private BigDecimal total;
 }
