@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class DetalleRequestDto {
-    private int idDetalle;
-    private int idEstadia;
-    private int idServicio;
-    private int cantidad;
+    private Integer idDetalle = 0;
+    private Integer idEstadia;
+    private Integer idServicio;
+    private Integer cantidad;
     private BigDecimal total;
 }
