@@ -74,6 +74,7 @@ public class CatalogoController {
             Form.setIdServicio(dtoEncontrado.getIdServicio());
             Form.setNombreServicio(dtoEncontrado.getNombreServicio());
             Form.setTarifa(dtoEncontrado.getTarifa());
+            Form.setDescripcion(dtoEncontrado.getDescripcion());
 
             model.addAttribute("servicios", servicioCatalogo.listarTodos());
             model.addAttribute("servicio", Form);

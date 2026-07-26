@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 public class CatalogoResponseDto {
-    private int idServicio;
+    private Integer idServicio;
     private String nombreServicio;
     private BigDecimal tarifa;
+    private String descripcion;
 }
