@@ -10,4 +10,5 @@ public class DetalleRequestDto {
     private Integer idServicio;
     private Integer cantidad;
     private BigDecimal total;
+    private String estado;
 }

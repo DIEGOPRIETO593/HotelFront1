@@ -6,15 +6,24 @@ import lombok.Data;
 
 @Data
 public class EstadiaResponseDto {
-    private int idEstadia;
+    private Integer idEstadia;
     
-    private int idHuesped;
+    private Integer idHuesped;
     private String nombreHuesped;     
-    private int idHabitacion;
+    private Integer idHabitacion;
     private String numeroHabitacion; 
 
     private LocalDateTime fechaIngreso;
     private LocalDateTime fechaSalida;
-    private int cantidadHuespedes;
+    private Integer cantidadHuespedes;
     private BigDecimal totalPagar;
+    private String estado;
+    
+    public long getDias() {
+        if (fechaIngreso != null && fechaSalida != null) {
+            long dias = java.time.temporal.ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
+            return dias < 1 ? 1 : dias;
+        }
+        return 0;
+    }
 }

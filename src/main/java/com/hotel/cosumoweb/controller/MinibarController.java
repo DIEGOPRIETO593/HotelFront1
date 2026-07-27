@@ -16,6 +16,11 @@ import com.hotel.cosumoweb.services.IMinibarService;
 import com.hotel.cosumoweb.services.IProductoService;
 import com.hotel.cosumoweb.services.IHabitacionService;
 
+/**
+ * Controlador MVC: Gestión de vistas para consumos de Minibar.
+ * Responsabilidad: Administrar los cargos de minibar conectándose al backend mediante WebClient.
+ * Implementa control de inmutabilidad para consumos ya pagados.
+ */
 @Controller
 @RequestMapping("/minibar")
 public class MinibarController {
@@ -41,6 +46,10 @@ public class MinibarController {
     }
 
     @PostMapping("/guardar")
+    /**
+     * POST /minibar/guardar - Registra o actualiza un cargo de minibar.
+     * Verifica previamente mediante buscarPorId que el registro no haya sido pagado con anterioridad.
+     */
     public String guardar(@Validated @ModelAttribute("minibar") MinibarRequestDto request, BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             model.addAttribute("minibares", servicio.listarTodos());
@@ -50,6 +59,17 @@ public class MinibarController {
             return "minibar/listarminibar";
         }
         try {
+            if (request.getIdMinibar() > 0) {
+                try {
+                    MinibarResponseDto existente = servicio.buscarPorId(request.getIdMinibar());
+                    if (existente != null && "Pagado".equalsIgnoreCase(existente.getEstado())) {
+                        redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede modificar el consumo: ya fue pagado."));
+                        return "redirect:/minibar";
+                    }
+                } catch (Exception ex) {
+                    // Ignore if not found
+                }
+            }
             servicio.guardar(request);
             redirect.addFlashAttribute("message", crearMensaje("success", "Minibar procesado correctamente."));
         } catch (WebClientResponseException e) {
@@ -74,6 +94,10 @@ public class MinibarController {
     public String editar(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
         try {
             MinibarResponseDto dto = servicio.buscarPorId(id);
+            if ("Pagado".equalsIgnoreCase(dto.getEstado())) {
+                redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede editar: el consumo ya se encuentra en estado 'Pagado'."));
+                return "redirect:/minibar";
+            }
             MinibarRequestDto form = new MinibarRequestDto();
             form.setIdMinibar(dto.getIdMinibar().intValue());
             form.setIdHabitacion(dto.getIdHabitacion().intValue());
@@ -92,9 +116,33 @@ public class MinibarController {
         }
     }
 
+    @GetMapping("/pagar/{id}")
+    public String pagar(@PathVariable("id") Integer id, RedirectAttributes redirect) {
+        try {
+            MinibarResponseDto dto = servicio.buscarPorId(id);
+            MinibarRequestDto form = new MinibarRequestDto();
+            form.setIdMinibar(dto.getIdMinibar().intValue());
+            form.setIdHabitacion(dto.getIdHabitacion().intValue());
+            form.setIdProducto(dto.getIdProducto().intValue());
+            form.setCantidad(dto.getCantidad());
+            form.setEstado("Pagado");
+            
+            servicio.guardar(form);
+            redirect.addFlashAttribute("message", crearMensaje("success", "Consumo de Minibar cobrado (Pagado)."));
+        } catch (Exception e) {
+            redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo procesar el pago del minibar."));
+        }
+        return "redirect:/minibar";
+    }
+
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable("id") Integer id, RedirectAttributes redirect) {
         try {
+            MinibarResponseDto dto = servicio.buscarPorId(id);
+            if (dto != null && "Pagado".equalsIgnoreCase(dto.getEstado())) {
+                redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede eliminar: el consumo ya se encuentra en estado 'Pagado'."));
+                return "redirect:/minibar";
+            }
             servicio.eliminar(id);
             redirect.addFlashAttribute("message", crearMensaje("success", "Eliminado correctamente."));
         } catch (Exception e) {

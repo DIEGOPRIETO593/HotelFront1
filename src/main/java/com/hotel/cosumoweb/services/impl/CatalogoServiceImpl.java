@@ -38,12 +38,21 @@ public class CatalogoServiceImpl implements ICatalogoService {
 
     @Override
     public CatalogoResponseDto guardar(CatalogoRequestDto request) {
-        return webClient.post()
-                .uri("/catalogo")
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(CatalogoResponseDto.class)
-                .block();
+        if (request.getIdServicio() != null && request.getIdServicio() > 0) {
+            return webClient.put()
+                    .uri("/catalogo/{id}", request.getIdServicio())
+                    .bodyValue(request)
+                    .retrieve()
+                    .bodyToMono(CatalogoResponseDto.class)
+                    .block();
+        } else {
+            return webClient.post()
+                    .uri("/catalogo")
+                    .bodyValue(request)
+                    .retrieve()
+                    .bodyToMono(CatalogoResponseDto.class)
+                    .block();
+        }
     }
 
     @Override

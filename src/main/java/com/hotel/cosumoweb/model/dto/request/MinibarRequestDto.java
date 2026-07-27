@@ -12,4 +12,7 @@ public class MinibarRequestDto {
     public void setIdProducto(int idProducto) { this.idProducto = idProducto; }
     public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
+    private String estado;
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 }

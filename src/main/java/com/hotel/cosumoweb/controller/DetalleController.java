@@ -22,6 +22,11 @@ import com.hotel.cosumoweb.services.ICatalogoService;
 import com.hotel.cosumoweb.services.IDetalleService;
 import com.hotel.cosumoweb.services.IEstadiaService;
 
+/**
+ * Controlador MVC: Gestión de vistas para Servicios Consumidos en Estadía.
+ * Responsabilidad: Administrar el registro y cobro de servicios adicionales (Room Service, etc.).
+ * Bloquea modificaciones sobre servicios liquidados.
+ */
 @Controller
 @RequestMapping("/detalle")
 public class DetalleController {
@@ -56,6 +61,17 @@ public class DetalleController {
 		}
 
 		try {
+			if (request.getIdDetalle() != null && request.getIdDetalle() > 0) {
+				try {
+					DetalleResponseDto existente = servicioDetalle.buscarPorId(request.getIdDetalle());
+					if (existente != null && "Pagado".equalsIgnoreCase(existente.getEstado())) {
+						redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede modificar el consumo: ya fue pagado."));
+						return "redirect:/detalle";
+					}
+				} catch (Exception ex) {
+					// Ignore if not found
+				}
+			}
 			servicioDetalle.guardar(request);
 			redirect.addFlashAttribute("message",
 					crearMensaje("success", "Detalle de servicio guardado correctamente."));
@@ -72,6 +88,10 @@ public class DetalleController {
 	public String editarDetalle(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
 		try {
 			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
+			if ("Pagado".equalsIgnoreCase(dtoEncontrado.getEstado())) {
+				redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede editar: el consumo ya se encuentra en estado 'Pagado'."));
+				return "redirect:/detalle";
+			}
 
 			DetalleRequestDto detalleForm = new DetalleRequestDto();
 			detalleForm.setIdDetalle(dtoEncontrado.getIdDetalle());
@@ -91,9 +111,35 @@ public class DetalleController {
 		}
 	}
 
+	@GetMapping("/pagar/{id}")
+	public String pagarDetalle(@PathVariable("id") Integer id, RedirectAttributes redirect) {
+		try {
+			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
+
+			DetalleRequestDto detalleForm = new DetalleRequestDto();
+			detalleForm.setIdDetalle(dtoEncontrado.getIdDetalle());
+			detalleForm.setIdEstadia(dtoEncontrado.getIdEstadia());
+			detalleForm.setIdServicio(dtoEncontrado.getIdServicio());
+			detalleForm.setCantidad(dtoEncontrado.getCantidad());
+			detalleForm.setTotal(dtoEncontrado.getTotal());
+			detalleForm.setEstado("Pagado");
+
+			servicioDetalle.guardar(detalleForm);
+			redirect.addFlashAttribute("message", crearMensaje("success", "Servicio consumido cobrado (Pagado)."));
+		} catch (Exception e) {
+			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo procesar el pago del servicio."));
+		}
+		return "redirect:/detalle";
+	}
+
 	@GetMapping("/eliminar/{id}")
 	public String eliminarDetalle(@PathVariable("id") Integer id, RedirectAttributes redirect) {
 		try {
+			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
+			if (dtoEncontrado != null && "Pagado".equalsIgnoreCase(dtoEncontrado.getEstado())) {
+				redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede eliminar: el consumo ya se encuentra en estado 'Pagado'."));
+				return "redirect:/detalle";
+			}
 			servicioDetalle.eliminar(id);
 			redirect.addFlashAttribute("message", crearMensaje("success", "Detalle eliminado exitosamente."));
 		} catch (WebClientResponseException e) {

@@ -21,6 +21,10 @@ import com.hotel.cosumoweb.model.dto.request.HabitacionRequestDto;
 import com.hotel.cosumoweb.model.dto.response.HabitacionResponseDto;
 import com.hotel.cosumoweb.services.IHabitacionService;
 
+/**
+ * Controlador MVC: Gestión de vistas para Habitaciones y monitoreo de estado.
+ * Responsabilidad: Presentar el catálogo de habitaciones y gestionar su disponibilidad a través del backend.
+ */
 @Controller
 @RequestMapping("/habitacion")
 public class habitacionController {
@@ -87,6 +91,7 @@ public class habitacionController {
 			habitacionForm.setPiso(dtoEncontrado.getPiso());
 			habitacionForm.setEstrellas(dtoEncontrado.getEstrellas());
 			habitacionForm.setCapacidad(dtoEncontrado.getCapacidad());
+			habitacionForm.setPrecio(dtoEncontrado.getPrecio());
 
 			model.addAttribute("habitaciones", servicioHabitacion.listarTodos());
 			model.addAttribute("habitacion", habitacionForm);

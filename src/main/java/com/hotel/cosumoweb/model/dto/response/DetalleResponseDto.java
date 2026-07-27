@@ -5,14 +5,15 @@ import lombok.Data;
 
 @Data
 public class DetalleResponseDto {
-    private int idDetalle;
+    private Integer idDetalle;
     
-    private int idEstadia;
-    private int idServicio;
+    private Integer idEstadia;
+    private Integer idServicio;
     private String nombreServicio;
     
-    private int cantidad;
+    private Integer cantidad;
     private BigDecimal total;
     private String numeroHabitacion;
     private String nombreHuesped;
+    private String estado;
 }

@@ -1,78 +1,83 @@
-# Sistema de Gestión Hotelera - Frontend (Cliente Web)
+# Sistema de Gestión Hotelera - Frontend (Cliente Web) 🏨
 
-Este repositorio contiene la aplicación frontend (cliente web) para el Sistema de Gestión Hotelera. Está desarrollada con **Spring Boot** y **Thymeleaf**, y se encarga de proporcionar la interfaz de usuario para gestionar habitaciones, huéspedes, estadías, catálogos de servicios, detalles de consumos y minibares.
-
-## 🚀 Tecnologías Utilizadas
-
-- **Java 17**
-- **Spring Boot** (Web, WebFlux para WebClient)
-- **Thymeleaf** (Motor de plantillas)
-- **Bootstrap / Stisla** (Diseño y UI)
-- **Lombok** (Reducción de código boilerplate)
-- **WebClient** (Consumo de API REST)
+Este repositorio contiene la aplicación frontend (cliente web) para el Sistema de Gestión Hotelera. Está desarrollada con **Spring Boot 3 (Java 21)** y **Thymeleaf**, y proporciona una interfaz visual moderna, responsiva y de diseño premium para gestionar habitaciones, huéspedes, estadías, catálogo de servicios, consumos de minibar y detalles contables.
 
 ---
 
-## ⚙️ Configuración del Proyecto
+## 🚀 Tecnologías Utilizadas
 
-A diferencia del backend, este proyecto **no requiere una base de datos propia**, ya que toda la información se obtiene consumiendo la API REST del backend.
+- **Java 21 (JDK 21)**
+- **Spring Boot 3** (Web, WebFlux para WebClient)
+- **Thymeleaf** (Motor de plantillas HTML del lado del servidor)
+- **Bootstrap 4 / Stisla UI** (Framework de diseño con extensiones CSS personalizadas)
+- **Lombok** (Reducción de código boilerplate)
+- **Spring WebClient** (Consumo reactivo y asíncrono de la API REST del backend)
+- **Vanilla JavaScript & jQuery** (Motor de búsqueda en tiempo real, cálculos en el cliente y modales dinámicas)
 
-### 1. Puerto de Ejecución
-La aplicación está configurada para ejecutarse en el puerto **8082** para evitar conflictos con el backend.
-`properties
-# application.properties
+---
+
+## ⚙️ Configuración y Ejecución del Proyecto
+
+A diferencia del backend, este proyecto **no requiere una base de datos propia**, ya que toda la información se obtiene consumiendo la API REST del backend en tiempo real.
+
+### 1. Requisitos del Entorno
+- **JDK 21** configurado en variable de entorno (`JAVA_HOME`).
+- **Backend (`hotel-master`)** ejecutándose previamente en el puerto `8081`.
+
+### 2. Puerto de Ejecución (`application.properties`)
+La aplicación se ejecuta en el puerto **8082** para evitar conflictos con el backend:
+```properties
 spring.application.name=cosumoweb
 server.port=8082
-`
+```
 
-### 2. Conexión con el Backend (API REST)
-El frontend se comunica con el backend a través de **Spring WebClient**. La URL base de la API está configurada en la clase webClientConfig.java.
-
-- **URL del Backend Esperada:** http://localhost:8081/api
-
-Si necesitas cambiar el puerto o la URL del backend en el futuro, debes modificar el archivo src/main/java/com/hotel/cosumoweb/configuration/webClientConfig.java:
-`java
+### 3. Conexión con el Backend (`webClientConfig.java`)
+El frontend se comunica con el backend a través de un Bean de **Spring WebClient**. La URL base está configurada para apuntar al puerto 8081:
+```java
 @Bean
 WebClient webClient(WebClient.Builder builder) {
     return builder.baseUrl("http://localhost:8081/api").build(); 
 }
-`
+```
+
+### 4. Compilación y Ejecución
+```powershell
+# Compilar y validar el código
+.\mvnw.cmd clean test-compile
+
+# Levantar el cliente web en puerto 8082
+.\mvnw.cmd spring-boot:run
+```
+Una vez iniciado, accede desde tu navegador web a: **http://localhost:8082**
 
 ---
 
-## 📡 ¿Cómo consume los datos?
+## 📡 Arquitectura y Consumo de la API REST (¿Cómo se conecta con el Backend?)
 
-La aplicación sigue el patrón MVC (Model-View-Controller) modificado para consumir una API:
+La aplicación implementa el patrón **MVC (Model-View-Controller)** adaptado para arquitecturas orientadas a servicios (SOA / API REST):
 
-1. **Controladores (@Controller)**: Atienden las peticiones HTTP del navegador (ej. /estadia, /detalle).
-2. **Servicios (@Service)**: Utilizan WebClient para hacer peticiones HTTP (GET, POST, PUT, DELETE) hacia la URL del backend (http://localhost:8081/api/...).
-3. **DTOs (Data Transfer Objects)**: Los datos JSON recibidos del backend se mapean automáticamente a objetos de Java (ResponseDto) usando Jackson. Cuando se envían datos desde un formulario, se empaquetan en un RequestDto.
-4. **Vistas (Thymeleaf)**: Los Controladores pasan estos objetos DTO al modelo (Model), y Thymeleaf se encarga de renderizar el HTML dinámico utilizando expresiones como ${estadia.nombreHuesped}.
-
----
-
-## 💼 Reglas de Negocio y Lógicas del Frontend
-
-Aunque el backend aplica las reglas de persistencia, el frontend maneja ciertas reglas y facilidades de experiencia de usuario (UX):
-
-- **Cálculos Automáticos en Tiempo Real**:
-  - **Detalle de Estadía (Consumo de Servicios)**: Al seleccionar un servicio de la lista y colocar una cantidad, el frontend calcula automáticamente el **Subtotal** (Precio del Servicio * Cantidad) usando JavaScript antes de enviarlo al servidor.
-  - **Minibar**: Funciona de la misma manera; al seleccionar un producto (ej. Gaseosa) e ingresar la cantidad, calcula el costo total del minibar a facturar en la estadía.
-  - **Cálculo de Noches (Estadía)**: Al crear una nueva estadía, el frontend usa un script para calcular y mostrar de inmediato el número de noches en base a la fecha de ingreso y salida seleccionadas.
-
-- **Manejo de Formularios y Modales**:
-  - Todos los CRUDs utilizan ventanas modales de Bootstrap en lugar de redireccionar a otra página, ofreciendo una experiencia tipo "Single Page Application".
-  - Se pasan los datos (data-id, data-huesped, etc.) hacia las modales de visualización de detalles (ej. "Factura de Servicio" o "Resumen de Estadía") usando JavaScript nativo.
-
-- **Validaciones Básicas**:
-  - Se utilizan atributos equired y min="1" u min="0" en los campos numéricos y de fechas para asegurar que el usuario no envíe formularios vacíos o incoherentes hacia el backend.
+1. **Controladores (`@Controller`)**: Atienden las peticiones HTTP del navegador (ej. `/estadia`, `/minibar`, `/habitaciones`). Manejan la navegación, validación visual y gestión de mensajes Flash.
+2. **Servicios y WebClient**: En cada controlador o servicio, se inyecta `WebClient` para disparar peticiones HTTP (`GET`, `POST`, `PUT`, `DELETE`) hacia la API REST del backend (`http://localhost:8081/api/...`).
+3. **Mapeo con DTOs (Data Transfer Objects)**:
+   - **`ResponseDto`**: Los objetos JSON recibidos desde la API REST se deserializan automáticamente en clases Java de respuesta (ej. `EstadiaResponseDto`, `HabitacionResponseDto`) usando Jackson.
+   - **`RequestDto`**: Al enviar formularios HTML, los datos capturados se empaquetan en objetos de petición (ej. `EstadiaRequestDto`) y se envían como JSON en el cuerpo (`body`) de la petición web.
+4. **Renderizado Dinámico (Thymeleaf)**: Los objetos DTO se inyectan en el modelo (`Model.addAttribute`) para que las plantillas HTML (en `src/main/resources/templates/...`) construyan dinámicamente las tablas, modales e insignias utilizando sintaxis declarativa (`th:each`, `th:text`, `th:if`).
 
 ---
 
-## ▶️ Cómo Ejecutar el Proyecto
+## 💎 Características Premium de Interfaz y Experiencia de Usuario (UX/UI)
 
-1. Asegúrate de tener **levantado primero el proyecto Backend** en el puerto 8081.
-2. Clona este repositorio y ábrelo en tu IDE (Eclipse, IntelliJ, VSCode).
-3. Espera que Maven descargue las dependencias.
-4. Ejecuta la clase principal CosumowebApplication.java.
-5. Abre en tu navegador web: **http://localhost:8082**
+1. **Buscador Universal en Tiempo Real (`custom.js`)**:
+   - Todas las vistas del sistema (Huéspedes, Habitaciones, Estadías, Minibares, Servicios, Catálogo y Productos) incorporan una barra de búsqueda instantánea inyectada automáticamente sobre las tablas de datos.
+   - Filtra filas en tiempo real por cualquier columna o texto coincidente, muestra un contador dinámico de registros visibles y presenta un estado informativo visual ("0 resultados coincidentes") en caso de búsquedas vacías.
+2. **Diseño Premium de Formularios (`custom.css`)**:
+   - Todos los menús desplegables (`<select>`) del sistema cuentan con un diseño estilizado: flechas chevron SVG en tono morado pastel integradas en el fondo, bordes redondeados modernos, padding optimizado y efectos de sombra/resplandor en eventos de foco y hover.
+3. **Gestión de Estados e Inmutabilidad ("Pagado" / "Por Cobrar")**:
+   - **Fuerza de Estado Inicial**: Al registrar nuevas estadías o consumos, el sistema asigna por defecto el estado `"Por Cobrar"`, inhabilitando la edición manual de este campo en el formulario de alta.
+   - **Blindaje de Registros Pagados**: Cuando una estadía, minibar o servicio pasa a estado `"Pagado"`, el frontend deshabilita visualmente los botones de edición y eliminación (`btn-secondary disabled`), y el controlador intercepta y rechaza cualquier intento de modificación sobre dichos registros.
+4. **Cálculos e Interactividad en Tiempo Real**:
+   - **Cobro Inteligente de Estadías**: Al hacer clic en el botón *"Pagar"* desde el modal de detalles de estadía, el sistema verifica que todas las cuentas de minibar y servicios hayan sido canceladas o unifica el saldo del cliente antes de liberar la habitación.
+   - **Cálculo de Subtotales y Noches**: JavaScript calcula dinámicamente el total de noches de alojamiento y los montos multiplicando cantidad por precio unitario en modales interactivos.
+
+---
+*Diseñado por Diego Prieto, Jhoel León y Pablo Torres - Universidad Israel*

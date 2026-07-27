@@ -18,8 +18,7 @@
 				<i class="fas me-2 fs-5"
 					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
 				<div th:text="${message.text}">Texto del mensaje</div>
-				<button type="button" class="btn-close" data-bs-dismiss="alert"
-					aria-label="Close"></button>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
 			</div>
 
 			<div class="d-flex justify-content-between align-items-center mb-4">
@@ -29,16 +28,11 @@
 						registrados en el hotel.</p>
 				</div>
 				<div class="d-flex gap-2">
-					<a th:href="@{/huesped}"
-						class="btn btn-outline-secondary shadow-sm d-flex align-items-center">
-						<i class="fas fa-sync-alt me-1"></i> Refrescar
-					</a>
-
 					<button type="button"
 						class="btn btn-primary shadow-sm d-flex align-items-center"
 						data-bs-toggle="modal" data-bs-target="#huespedModal"
 						data-toggle="modal" data-target="#huespedModal">
-						<i class="fas fa-plus me-1"></i> Nuevo Huésped
+						<i class="fas fa-plus mr-2 me-2" style="margin-right: 8px;"></i> Nuevo Huésped
 					</button>
 				</div>
 			</div>
@@ -103,11 +97,11 @@
 						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
 							<h5 class="modal-title fw-bold text-primary"
 								id="huespedModalLabel"
-								th:text="${huesped != null and huesped.idHuesped != null} ? 'Editar Huésped #' + ${huesped.idHuesped} : 'Registrar Nuevo Huésped'">
+								th:text="${huesped != null and huesped.idHuesped != null and huesped.idHuesped != 0} ? 'Editar Huésped #' + ${huesped.idHuesped} : 'Registrar Nuevo Huésped'">
 								Registrar Nuevo Huésped</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"
+							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" data-dismiss="modal"
 								aria-label="Close"
-								th:onclick="|window.location.href='/huesped'|"></button>
+								th:onclick="|window.location.href='/huesped'|"><span>&times;</span></button>
 						</div>
 
 						<form th:action="@{/huesped/guardar}" th:object="${huesped}"
