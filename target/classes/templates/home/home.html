@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/plantillaui}">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard - Control de Actividad Hotelera</title>
+<!-- Chart.js + Plugin DataLabels para mostrar números sobre las porciones -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+</head>
+<body>
+
+	<div layout:fragment="contenidopaginas">
+		<div class="container-fluid py-3">
+
+			<!-- Encabezado del Dashboard -->
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h2 class="h3 fw-bold mb-0 text-primary">
+						<i class="fas fa-chart-line me-2"></i>Control de Actividad General
+					</h2>
+					<p class="text-secondary small mb-0">Supervisión operativa e informativa en tiempo real.</p>
+				</div>
+			</div>
+
+			<!-- SECCIÓN GRÁFICO VISUAL (CON NÚMEROS VISIBLES) -->
+			<div class="row g-4 mb-5">
+				<div class="col-12 col-md-8 mx-auto">
+					<div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+						<h5 class="fw-bold text-primary mb-3">
+							<i class="fas fa-chart-pie me-2"></i>Estado de Habitaciones
+						</h5>
+						<div style="height: 320px; position: relative;">
+							<canvas id="chartHabitaciones"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- TABLA 1: SERVICIOS ADICIONALES SOLICITADOS -->
+			<div class="card shadow-sm border-0 rounded-4 mb-5">
+				<div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+					<h5 class="fw-bold text-primary mb-0">
+						<i class="fas fa-concierge-bell me-2"></i>Servicios Adicionales Solicitados
+					</h5>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light">
+								<tr>
+									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3" style="width: 80px;">ID</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Huésped</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Servicio</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center">Cantidad</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center pe-4">Estado</th>
+								</tr>
+							</thead>
+							<tbody class="border-top-0">
+								<tr th:each="d : ${detalles}">
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${d.idDetalle}">#1</span></td>
+									<td class="fw-medium text-primary"><i class="fas fa-user-circle me-1"></i><span th:text="${d.nombreHuesped}">Juan Perez</span></td>
+									<td class="fw-semibold text-success"><i class="fas fa-door-closed me-1"></i><span th:text="${d.numeroHabitacion}">12</span></td>
+									<td th:text="${d.nombreServicio}">desayuno</td>
+									<td class="text-center fw-bold" th:text="${d.cantidad}">2</td>
+									<td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(d.total, 1, 2)}">$60.00</td>
+									<td class="text-center pe-4">
+										<span th:text="${d.estado != null ? d.estado : 'Por Cobrar'}"
+											  th:class="${d.estado == 'Pagado' ? 'badge bg-success shadow-sm px-3 py-2' : 'badge bg-warning text-dark shadow-sm px-3 py-2'}">
+										</span>
+									</td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(detalles)}">
+									<td colspan="7" class="text-center py-4 text-secondary">
+										<p class="mb-0">No hay servicios registrados.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- TABLA 2: CONSUMO DE MINIBAR -->
+			<div class="card shadow-sm border-0 rounded-4 mb-5">
+				<div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+					<h5 class="fw-bold text-primary mb-0">
+						<i class="fas fa-wine-bottle me-2"></i>Consumos de Minibar
+					</h5>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light">
+								<tr>
+									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3" style="width: 80px;">ID</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Producto</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center">Cantidad</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center pe-4">Estado</th>
+								</tr>
+							</thead>
+							<tbody class="border-top-0">
+								<tr th:each="m : ${minibares}">
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${m.idMinibar}">#1</span></td>
+									<td class="fw-semibold text-success"><i class="fas fa-door-closed me-1"></i><span th:text="${m.numeroHabitacion}">12</span></td>
+									<td th:text="${m.nombreProducto}">galletas</td>
+									<td class="text-center fw-bold" th:text="${m.cantidad}">3</td>
+									<td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(m.total, 1, 2)}">$6.60</td>
+									<td class="text-center pe-4">
+										<span th:text="${m.estado != null ? m.estado : 'Por Cobrar'}"
+											  th:class="${m.estado == 'Pagado' ? 'badge bg-success shadow-sm px-3 py-2' : 'badge bg-warning text-dark shadow-sm px-3 py-2'}">
+										</span>
+									</td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(minibares)}">
+									<td colspan="6" class="text-center py-4 text-secondary">
+										<p class="mb-0">No existen consumos de minibar registrados.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- SCRIPT EN TIEMPO REAL CONECTADO A TU HOMECONTROLLER -->
+		<script th:inline="javascript">
+			document.addEventListener("DOMContentLoaded", function() {
+				// Registrar plugin de etiquetas sobre el grafico
+				if (typeof ChartDataLabels !== 'undefined') {
+					Chart.register(ChartDataLabels);
+				}
+
+				// Obtener las variables pasadas desde HomeController.java
+				const cantDisponibles = /*[[${cantDisponibles}]]*/ 0;
+				const cantOcupadas = /*[[${cantOcupadas}]]*/ 0;
+				const cantMantenimiento = /*[[${cantMantenimiento}]]*/ 0;
+
+				const ctxHab = document.getElementById('chartHabitaciones');
+				
+				if (ctxHab) {
+					new Chart(ctxHab.getContext('2d'), {
+						type: 'doughnut',
+						data: {
+							labels: ['Disponibles', 'Ocupadas', 'Mantenimiento'],
+							datasets: [{
+								// Asignacion de datos dinámicos
+								data: [cantDisponibles, cantOcupadas, cantMantenimiento], 
+								backgroundColor: ['#198754', '#dc3545', '#ffc107']
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: {
+								legend: {
+									position: 'top'
+								},
+								datalabels: {
+									color: '#ffffff',
+									font: {
+										weight: 'bold',
+										size: 16
+									},
+									formatter: (value) => {
+										return value > 0 ? value : ''; // Muestra el número solo si es mayor a 0
+									}
+								}
+							}
+						}
+					});
+				}
+			});
+		</script>
+	</div>
+
+</body>
+</html>

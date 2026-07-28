@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/plantillaui}">
+<head>
+<meta charset="UTF-8">
+<title>Detalle de Servicios por Estadía</title>
+</head>
+<body>
+
+	<div layout:fragment="contenidopaginas">
+		<div class="container-fluid py-2">
+
+			<div th:if="${message != null}"
+				th:classappend="${'alert-' + message.type}"
+				class="alert shadow-sm alert-dismissible fade show d-flex align-items-center"
+				role="alert">
+				<i class="fas me-2 fs-5"
+					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+				<div th:text="${message.text}">Texto del mensaje</div>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+			</div>
+
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<div>
+					<h2 class="h3 fw-bold mb-0 text-primary">Detalle de Servicios Consumidos</h2>
+					<p class="text-secondary small mb-0">Administra los consumo adicionales asignados a las estadías.</p>
+				</div>
+				<div class="d-flex gap-2">
+					<button type="button"
+						class="btn btn-primary shadow-sm d-flex align-items-center"
+						data-bs-toggle="modal" data-bs-target="#detalleModal"
+						data-toggle="modal" data-target="#detalleModal">
+						<i class="fas fa-plus mr-2 me-2" style="margin-right: 8px;"></i> Nuevo Consumo
+					</button>
+				</div>
+			</div>
+
+			<div class="card shadow-sm border-0 rounded-4">
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light">
+								<tr>
+									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Huésped</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Servicio</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cantidad</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total</th>
+									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center">Estado</th>
+									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
+								</tr>
+							</thead>
+							<tbody class="border-top-0">
+								<tr th:each="d : ${detalles}">
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${d.idDetalle}">#1</span></td>
+									<td class="fw-medium" th:text="${d.nombreHuesped}">Juan Perez</td>
+									<td th:text="${d.numeroHabitacion}">101</td>
+									<td th:text="${d.nombreServicio}">Spa</td>
+									<td th:text="${d.cantidad}">1</td>
+									<td class="fw-bold text-success" th:text="'$' + ${d.total}">$0.00</td>
+									<td class="text-center">
+										<span th:text="${d.estado != null ? d.estado : 'Por Cobrar'}"
+											  th:class="${d.estado == 'Pagado' ? 'badge bg-success shadow-sm px-3 py-2' : 'badge bg-warning text-dark shadow-sm px-3 py-2'}">
+										</span>
+									</td>
+									<td class="text-end pe-4">
+										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${d.idDetalle}" th:data-hue="${d.nombreHuesped}" th:data-hab="${d.numeroHabitacion}" th:data-ser="${d.nombreServicio}" th:data-cant="${d.cantidad}" th:data-tot="${d.total}" th:data-est="${d.estado != null ? d.estado : 'Por Cobrar'}" onclick="verDetalleServicio(this.getAttribute('data-id'), this.getAttribute('data-hue'), this.getAttribute('data-hab'), this.getAttribute('data-ser'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'))">
+											<i class="fas fa-eye"></i> Detalle
+										</button>
+										<a th:if="${d.estado != 'Pagado'}" th:href="@{/detalle/editar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
+											<i class="fas fa-pencil-alt"></i>
+										</a>
+										<button th:if="${d.estado == 'Pagado'}" type="button" class="btn btn-sm btn-outline-secondary me-2 shadow-sm disabled" style="opacity: 0.4; cursor: not-allowed;" title="No editable (Servicio pagado)" disabled>
+											<i class="fas fa-pencil-alt"></i>
+										</button>
+										<a th:if="${d.estado != 'Pagado'}" th:href="@{/detalle/eliminar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este detalle?');">
+											<i class="fas fa-trash"></i>
+										</a>
+										<button th:if="${d.estado == 'Pagado'}" type="button" class="btn btn-sm btn-outline-secondary shadow-sm disabled" style="opacity: 0.4; cursor: not-allowed;" title="No eliminable (Servicio pagado)" disabled>
+											<i class="fas fa-trash"></i>
+										</button>
+									</td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(detalles)}">
+									<td colspan="7" class="text-center py-5 text-secondary">
+										<i class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>
+										<p class="fs-5 fw-medium mb-1">No hay consumos registrados</p>
+										<p class="small mb-0">Comienza asignando un consumo de servicio a una estadía.</p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<script>
+				function verDetalleServicio(id, hue, hab, ser, cant, total, estado) {
+					document.getElementById('det-ser-hue').innerText = hue || 'N/A';
+					document.getElementById('det-ser-hab').innerText = 'Hab. ' + (hab || 'N/A');
+					document.getElementById('det-ser-nom').innerText = ser || 'N/A';
+					document.getElementById('det-ser-cant').innerText = cant + ' un.';
+					document.getElementById('det-ser-tot').innerText = '$' + parseFloat(total).toFixed(2);
+					const estElem = document.getElementById('det-ser-est');
+					if(estElem) {
+						estElem.innerText = estado || 'Por Cobrar';
+						estElem.className = (estado === 'Pagado') ? 'badge bg-success px-3 py-2 fs-6' : 'badge bg-warning text-dark px-3 py-2 fs-6';
+					}
+					const btnPagar = document.getElementById('btn-ser-pagar');
+					if(btnPagar) {
+						if(estado === 'Pagado') {
+							btnPagar.style.display = 'none';
+						} else {
+							btnPagar.style.display = 'inline-block';
+							btnPagar.href = '/detalle/pagar/' + id;
+						}
+					}
+					$('#detalleServicioModal').modal('show');
+				}
+			</script>
+			<div class="modal fade" id="detalleServicioModal" tabindex="-1" aria-labelledby="detalleServicioLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-sm">
+					<div class="modal-content rounded-4 shadow border-0">
+						<div class="modal-header bg-light border-bottom-0 pb-3 pt-4 px-4 d-flex justify-content-between align-items-center">
+							<h5 class="modal-title fw-bold text-dark mb-0 d-flex align-items-center"><i class="fas fa-concierge-bell me-2 text-primary" style="margin-right: 8px;"></i> Detalle Servicio</h5>
+							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" onclick="$('#detalleServicioModal').modal('hide');" aria-label="Close"><span>&times;</span></button>
+						</div>
+						<div class="modal-body px-4 pt-3 pb-4">
+							<div class="text-center mb-4">
+								<h3 class="fw-bold text-dark mb-0" id="det-ser-hue"></h3>
+								<span class="badge bg-info text-dark mt-1 px-3 py-1" id="det-ser-hab"></span>
+							</div>
+							<div class="border-top border-bottom py-3 mb-3">
+								<div class="d-flex justify-content-between mb-1">
+									<span class="text-secondary fw-semibold">Servicio:</span>
+									<span class="text-dark fw-bold text-end" id="det-ser-nom"></span>
+								</div>
+								<div class="d-flex justify-content-between mb-1">
+									<span class="text-secondary fw-semibold">Cantidad:</span>
+									<span class="text-dark fw-bold" id="det-ser-cant"></span>
+								</div>
+								<div class="d-flex justify-content-between">
+									<span class="text-secondary fw-semibold">Estado:</span>
+									<span id="det-ser-est" class="badge px-3 py-2 fs-6"></span>
+								</div>
+							</div>
+							<div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
+								<span class="fw-bold fs-6 text-dark text-uppercase">Total</span>
+								<span class="fw-bold fs-3 text-primary" id="det-ser-tot"></span>
+							</div>
+						</div>
+						<div class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
+							<a id="btn-ser-pagar" href="#" class="btn btn-success px-4 shadow-sm w-100" onclick="return confirm('¿Confirmas el cobro de este servicio?');"><i class="fas fa-money-bill-wave me-2"></i> Pagar Servicio</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="detalleModal" tabindex="-1" role="dialog"
+				aria-labelledby="detalleModalLabel" aria-hidden="true"
+				th:classappend="${showModal} ? 'show d-block' : ''">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content border-0 shadow-lg rounded-4">
+
+						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+							<h5 class="modal-title fw-bold text-primary" id="detalleModalLabel"
+								th:text="${detalle != null and detalle.idDetalle != 0} ? 'Editar Detalle #' + ${detalle.idDetalle} : 'Registrar Nuevo Consumo'">
+								Registrar Nuevo Consumo</h5>
+							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" data-dismiss="modal"
+								aria-label="Close"
+								th:onclick="|window.location.href='/detalle'|"><span>&times;</span></button>
+						</div>
+
+						<form th:action="@{/detalle/guardar}" th:object="${detalle}" method="post">
+
+							<input type="hidden" th:field="*{idDetalle}" />
+
+							<div class="modal-body px-4 pt-4">
+								<div class="row">
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Estadía</label>
+										<select th:field="*{idEstadia}" class="form-select" required>
+											<option value="">Seleccione Estadía</option>
+											<option th:each="e : ${estadias}" th:value="${e.idEstadia}" th:text="'Estadía #' + ${e.idEstadia}"></option>
+										</select>
+									</div>
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Servicio</label>
+										<select th:field="*{idServicio}" id="idServicio" class="form-select" required>
+											<option value="">Seleccione Servicio</option>
+											<option th:each="s : ${servicios}" th:value="${s.idServicio}" th:text="${s.nombreServicio}" th:data-precio="${s.tarifa}"></option>
+										</select>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Cantidad</label>
+										<input type="number" th:field="*{cantidad}" id="cantidad" class="form-control" required min="1" />
+									</div>
+									<div class="col-12 col-md-6 form-group mb-3">
+										<label class="form-label fw-semibold">Total ($)</label>
+										<input type="number" step="0.01" th:field="*{total}" id="total" class="form-control" required min="0" />
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
+								<a th:href="@{/detalle}" class="btn btn-secondary">Cancelar</a>
+								<button type="submit" class="btn btn-primary px-4"
+									th:text="${detalle.idDetalle != 0} ? 'Actualizar' : 'Guardar'">
+									Guardar</button>
+							</div>
+						</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const servSelect = document.getElementById('idServicio');
+        const cantInput = document.getElementById('cantidad');
+        const totalInput = document.getElementById('total');
+
+        function calcularTotalServicio() {
+            if (servSelect && cantInput && totalInput) {
+                if (servSelect.value && cantInput.value) {
+                    const selectedOption = servSelect.options[servSelect.selectedIndex];
+                    const tarifa = parseFloat(selectedOption.getAttribute('data-precio') || 0);
+                    const cantidad = parseInt(cantInput.value || 0);
+                    
+                    totalInput.value = (tarifa * cantidad).toFixed(2);
+                }
+            }
+        }
+
+        if(servSelect) servSelect.addEventListener('change', calcularTotalServicio);
+        if(cantInput) cantInput.addEventListener('input', calcularTotalServicio);
+    });
+</script>
+
+
+
+					</div>
+				</div>
+
+				<script th:inline="javascript">
+					document.addEventListener("DOMContentLoaded", function() {
+						/*[# th:if="${showModal}"]*/
+						if (typeof bootstrap !== 'undefined') {
+							var modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+							modal.show();
+						} else if (typeof $ !== 'undefined') {
+							$('#detalleModal').modal('show');
+						}
+						/*[/]*/
+					});
+				</script>
+				<style>
+					.modal.show.d-block {
+						z-index: 1055 !important;
+						background-color: rgba(0, 0, 0, 0.5) !important;
+					}
+					.modal-backdrop {
+						display: none !important;
+					}
+				</style>
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>
