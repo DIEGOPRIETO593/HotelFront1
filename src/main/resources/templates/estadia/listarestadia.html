@@ -70,7 +70,7 @@
 									<td th:text="${e.cantidadHuespedes}">2</td>
 									<td th:text="'$' + ${e.totalPagar}">$100.00</td>
 									<td class="text-end pe-4">
-										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${e.idEstadia}" th:data-huesped="${e.nombreHuesped != null and !e.nombreHuesped.isEmpty() ? e.nombreHuesped : 'Huésped Eliminado / Desvinculado'}" th:data-hab="${e.numeroHabitacion}" th:data-in="${e.fechaIngreso}" th:data-out="${e.fechaSalida}" th:data-cant="${e.cantidadHuespedes}" th:data-tot="${e.totalPagar}" th:data-est="${e.estado != null ? e.estado : 'Por Cobrar'}" onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'))">
+										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${e.idEstadia}" th:data-huesped="${e.nombreHuesped != null and !e.nombreHuesped.isEmpty() ? e.nombreHuesped : 'Huésped Eliminado / Desvinculado'}" th:data-hab="${e.numeroHabitacion}" th:data-in="${e.fechaIngreso}" th:data-out="${e.fechaSalida}" th:data-cant="${e.cantidadHuespedes}" th:data-tot="${e.totalPagar}" th:data-est="${e.estado != null ? e.estado : 'Por Cobrar'}" th:data-observaciones="${e.observaciones}" onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'), this.getAttribute('data-observaciones'))">
 											<i class="fas fa-eye"></i>
 										</button>
 										<a th:if="${e.estado != 'Pagado'}" th:href="@{/estadia/editar/{id}(id=${e.idEstadia})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
@@ -104,7 +104,7 @@
 				const globalDetalles = /*[[${detalles}]]*/ [];
 				/*]]>*/
 
-				function verDetalleEstadia(id, huesped, hab, ingreso, salida, cant, total, estado) {
+				function verDetalleEstadia(id, huesped, hab, ingreso, salida, cant, total, estado, observaciones) {
 					document.getElementById('det-est-huesped').innerText = (huesped && huesped !== 'null' && huesped !== '#null' && huesped !== '') ? huesped : 'Huésped Eliminado / Desvinculado';
 					document.getElementById('det-est-hab').innerText = hab || 'N/A';
 					document.getElementById('det-est-ingreso').innerText = (ingreso || '').replace('T', ' ');
@@ -116,6 +116,24 @@
 						estElem.innerText = estado || 'Por Cobrar';
 						estElem.className = (estado === 'Pagado') ? 'badge bg-success px-3 py-2 fs-6' : 'badge bg-warning text-dark px-3 py-2 fs-6';
 					}
+
+					// Observaciones
+					const obsTextarea = document.getElementById('det-est-observaciones');
+					const obsBtnGuardar = document.getElementById('det-btn-guardar-obs');
+					const obsIdInput = document.getElementById('det-obs-estadia-id');
+					if(obsTextarea) {
+						obsTextarea.value = (observaciones && observaciones !== 'null' && observaciones !== '') ? observaciones : '';
+						if (estado === 'Pagado') {
+							obsTextarea.setAttribute('readonly', 'readonly');
+							obsTextarea.classList.add('bg-light');
+							if(obsBtnGuardar) obsBtnGuardar.style.display = 'none';
+						} else {
+							obsTextarea.removeAttribute('readonly');
+							obsTextarea.classList.remove('bg-light');
+							if(obsBtnGuardar) obsBtnGuardar.style.display = 'inline-block';
+						}
+					}
+					if(obsIdInput) obsIdInput.value = id;
 
 					// Filter minibares for this room number
 					const miniList = globalMinibares ? globalMinibares.filter(m => String(m.numeroHabitacion) === String(hab)) : [];
@@ -251,6 +269,16 @@
 									<span id="det-est-estado" class="badge px-3 py-2 fs-6"></span>
 								</div>
 							</div>
+							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
+								<h6 class="text-muted mb-2 text-uppercase small fw-bold border-bottom pb-2 d-flex align-items-center"><i class="fas fa-sticky-note me-2 text-primary" style="margin-right: 8px;"></i> Observaciones</h6>
+								<form id="formObservaciones" th:action="@{/estadia/guardarObservaciones}" method="post">
+									<input type="hidden" id="det-obs-estadia-id" name="idEstadia" value="0" />
+									<textarea id="det-est-observaciones" name="observaciones" class="form-control mb-2" rows="3" placeholder="Ej: Solicita cama extra, alérgico a mariscos, llegada tardía..."></textarea>
+									<div class="text-end">
+										<button id="det-btn-guardar-obs" type="submit" class="btn btn-sm btn-outline-primary shadow-sm"><i class="fas fa-save me-1" style="margin-right: 4px;"></i> Guardar Observación</button>
+									</div>
+								</form>
+							</div>
 							<div id="det-est-alert" class="alert alert-info d-flex align-items-center mb-0 small shadow-sm" role="alert" style="display: none;"></div>
 						</div>
 <div class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
@@ -323,6 +351,7 @@
 										<input type="hidden" th:field="*{estado}" value="Por Cobrar" />
 									</div>
 								</div>
+
 							</div>
 
 							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">

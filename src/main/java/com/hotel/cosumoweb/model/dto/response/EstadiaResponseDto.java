@@ -18,6 +18,7 @@ public class EstadiaResponseDto {
     private Integer cantidadHuespedes;
     private BigDecimal totalPagar;
     private String estado;
+    private String observaciones;
     
     public long getDias() {
         if (fechaIngreso != null && fechaSalida != null) {

@@ -20,4 +20,5 @@ public class EstadiaRequestDto {
     private Integer cantidadHuespedes;
     private BigDecimal totalPagar;
     private String estado = "Por Cobrar";
+    private String observaciones;
 }

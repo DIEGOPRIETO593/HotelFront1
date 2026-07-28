@@ -135,7 +135,7 @@ public class EstadiaController {
             estadiaForm.setCantidadHuespedes(dtoEncontrado.getCantidadHuespedes());
             estadiaForm.setTotalPagar(dtoEncontrado.getTotalPagar());
             estadiaForm.setEstado("Por Cobrar");
-
+            estadiaForm.setObservaciones(dtoEncontrado.getObservaciones());
             cargarListasModel(model);
             model.addAttribute("estadia", estadiaForm);
             model.addAttribute("showModal", true);
@@ -180,7 +180,7 @@ public class EstadiaController {
             estadiaForm.setCantidadHuespedes(dtoEncontrado.getCantidadHuespedes());
             estadiaForm.setTotalPagar(dtoEncontrado.getTotalPagar());
             estadiaForm.setEstado("Pagado");
-
+            estadiaForm.setObservaciones(dtoEncontrado.getObservaciones());
             servicioEstadia.guardar(estadiaForm);
             redirect.addFlashAttribute("message", crearMensaje("success", "Estadía cobrada exitosamente (Pagado). Habitación liberada a Disponible."));
         } catch (Exception e) {
@@ -213,6 +213,34 @@ public class EstadiaController {
             redirect.addFlashAttribute("message", crearMensaje("danger", errorMsg));
         } catch (Exception e) {
             redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar la estadía."));
+        }
+        return "redirect:/estadia";
+    }
+
+    @PostMapping("/guardarObservaciones")
+    public String guardarObservaciones(@org.springframework.web.bind.annotation.RequestParam("idEstadia") Integer id,
+                                       @org.springframework.web.bind.annotation.RequestParam("observaciones") String observaciones,
+                                       RedirectAttributes redirect) {
+        try {
+            EstadiaResponseDto dtoEncontrado = servicioEstadia.buscarPorId(id);
+            if (dtoEncontrado != null && "Pagado".equalsIgnoreCase(dtoEncontrado.getEstado())) {
+                redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede modificar: la estadía ya fue pagada."));
+                return "redirect:/estadia";
+            }
+            EstadiaRequestDto estadiaForm = new EstadiaRequestDto();
+            estadiaForm.setIdEstadia(dtoEncontrado.getIdEstadia());
+            estadiaForm.setIdHuesped(dtoEncontrado.getIdHuesped());
+            estadiaForm.setIdHabitacion(dtoEncontrado.getIdHabitacion());
+            estadiaForm.setFechaIngreso(dtoEncontrado.getFechaIngreso());
+            estadiaForm.setFechaSalida(dtoEncontrado.getFechaSalida());
+            estadiaForm.setCantidadHuespedes(dtoEncontrado.getCantidadHuespedes());
+            estadiaForm.setTotalPagar(dtoEncontrado.getTotalPagar());
+            estadiaForm.setEstado(dtoEncontrado.getEstado());
+            estadiaForm.setObservaciones(observaciones);
+            servicioEstadia.guardar(estadiaForm);
+            redirect.addFlashAttribute("message", crearMensaje("success", "Observación guardada correctamente."));
+        } catch (Exception e) {
+            redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo guardar la observación."));
         }
         return "redirect:/estadia";
     }
