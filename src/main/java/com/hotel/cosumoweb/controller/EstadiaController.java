@@ -48,12 +48,17 @@ public class EstadiaController {
         this.servicioDetalle = servicioDetalle;
     }
 
+<<<<<<< Updated upstream
     // 1. LISTAR PRINCIPAL
     @GetMapping
     /**
      * GET /estadia - Carga la vista principal de estadías.
      * Consume los endpoints REST de estadías, huéspedes y habitaciones mediante WebClient para popular las tablas y modales.
      */
+=======
+    @GetMapping
+ 
+>>>>>>> Stashed changes
     public String leerEstadia(Model model) {
         cargarListasModel(model);
         if (!model.containsAttribute("estadia")) {
@@ -63,16 +68,31 @@ public class EstadiaController {
     }
 
     @PostMapping("/guardar")
+<<<<<<< Updated upstream
     /**
      * POST /estadia/guardar - Procesa el alta o modificación de una estadía.
      * Seguridad: Fuerza el estado 'Por Cobrar' por defecto para evitar alteraciones manuales o inyección HTML.
      * Manejo de errores: Intercepta WebClientResponseException para decodificar mensajes JSON del backend (ej. Habitación ocupada).
      */
+=======
+
+>>>>>>> Stashed changes
     public String guardar(@Validated @ModelAttribute("estadia") EstadiaRequestDto request,
             BindingResult result,
             Model model,
             RedirectAttributes redirect) {
 
+<<<<<<< Updated upstream
+=======
+        // 1. VALIDACIÓN MANUAL: La fecha de salida no puede ser menor o igual a la de ingreso
+        if (request.getFechaIngreso() != null && request.getFechaSalida() != null) {
+            if (!request.getFechaSalida().isAfter(request.getFechaIngreso())) {
+                result.rejectValue("fechaSalida", "error.estadia", "La fecha de salida debe ser posterior a la fecha de ingreso.");
+            }
+        }
+
+        
+>>>>>>> Stashed changes
         if (result.hasErrors()) {
             cargarListasModel(model);
             model.addAttribute("showModal", true);
@@ -114,10 +134,14 @@ public class EstadiaController {
     }
 
     @GetMapping("/editar/{id}")
+<<<<<<< Updated upstream
     /**
      * GET /estadia/editar/{id} - Carga los datos de una estadía en el formulario modal.
      * Blindaje: Si la estadía tiene estado 'Pagado', bloquea la edición y retorna una alerta visual Flash.
      */
+=======
+ 
+>>>>>>> Stashed changes
     public String editarEstadia(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
         try {
             EstadiaResponseDto dtoEncontrado = servicioEstadia.buscarPorId(id);
@@ -148,11 +172,15 @@ public class EstadiaController {
     }
 
     @GetMapping("/pagar/{id}")
+<<<<<<< Updated upstream
     /**
      * GET /estadia/pagar/{id} - Ejecuta el cobro de la estadía.
      * Regla de negocio: Verifica que no existan cuentas pendientes en Minibar o Servicios.
      * Si todo está liquidado, cambia el estado a 'Pagado' y el backend automáticamente libera la habitación a 'Disponible'.
      */
+=======
+ 
+>>>>>>> Stashed changes
     public String pagarEstadia(@PathVariable("id") Integer id, RedirectAttributes redirect) {
         try {
             EstadiaResponseDto dtoEncontrado = servicioEstadia.buscarPorId(id);
