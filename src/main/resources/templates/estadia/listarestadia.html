@@ -18,37 +18,25 @@
 				<i class="fas me-2 fs-5"
 					th:classappend="${message.type == 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
 				<div th:text="${message.text}">Texto del mensaje</div>
-<<<<<<< Updated upstream
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
-=======
 				<button type="button" class="close" data-dismiss="alert"
 					aria-label="Close">
 					<span>&times;</span>
 				</button>
->>>>>>> Stashed changes
 			</div>
 
 			<div class="d-flex justify-content-between align-items-center mb-4">
 				<div>
 					<h2 class="h3 fw-bold mb-0 text-primary">Gestión de Estadías</h2>
-<<<<<<< Updated upstream
-					<p class="text-secondary small mb-0">Administra el registro de ingresos y salidas del hotel.</p>
-=======
 					<p class="text-secondary small mb-0">Administra el registro de
 						ingresos y salidas del hotel.</p>
->>>>>>> Stashed changes
 				</div>
 				<div class="d-flex gap-2">
 					<button type="button"
 						class="btn btn-primary shadow-sm d-flex align-items-center"
 						data-bs-toggle="modal" data-bs-target="#estadiaModal"
 						data-toggle="modal" data-target="#estadiaModal">
-<<<<<<< Updated upstream
-						<i class="fas fa-plus mr-2 me-2" style="margin-right: 8px;"></i> Nueva Estadía
-=======
 						<i class="fas fa-plus mr-2 me-2" style="margin-right: 8px;"></i>
 						Nueva Estadía
->>>>>>> Stashed changes
 					</button>
 				</div>
 			</div>
@@ -59,18 +47,6 @@
 						<table class="table table-hover align-middle mb-0">
 							<thead class="table-light">
 								<tr>
-<<<<<<< Updated upstream
-									<th class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start" style="width: 80px;">ID</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Huésped</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Fecha Ingreso</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Fecha Salida</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center">Días</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center">Estado</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cant. Huéspedes</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total a Pagar</th>
-									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
-=======
 									<th
 										class="ps-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-start"
 										style="width: 80px;">ID</th>
@@ -90,40 +66,10 @@
 										a Pagar</th>
 									<th
 										class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
->>>>>>> Stashed changes
 								</tr>
 							</thead>
 							<tbody class="border-top-0">
-								<tr th:each="e : ${estadias}">
-<<<<<<< Updated upstream
-									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${e.idEstadia}">#1</span></td>
-									<td class="fw-medium text-primary"><i class="fas fa-user-circle me-2 text-secondary" style="margin-right: 6px;"></i><span th:text="${e.nombreHuesped != null and !e.nombreHuesped.isEmpty() ? e.nombreHuesped : 'Huésped Eliminado / Desvinculado'}"></span></td>
-									<td class="fw-medium text-success"><i class="fas fa-door-closed me-2 text-secondary" style="margin-right: 6px;"></i><span th:text="${e.numeroHabitacion}"></span></td>
-									<td th:text="${e.fechaIngreso}">2026-01-01T12:00</td>
-									<td th:text="${e.fechaSalida}">2026-01-05T12:00</td>
-									<td class="text-center fw-bold text-secondary" th:text="${e.dias}">1</td>
-									<td class="text-center">
-										<span th:text="${e.estado != null ? e.estado : 'Por Cobrar'}"
-											  th:class="${e.estado == 'Pagado' ? 'badge bg-success shadow-sm px-3 py-2' : 'badge bg-warning text-dark shadow-sm px-3 py-2'}">
-										</span>
-									</td>
-									<td th:text="${e.cantidadHuespedes}">2</td>
-									<td th:text="'$' + ${e.totalPagar}">$100.00</td>
-									<td class="text-end pe-4">
-										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${e.idEstadia}" th:data-huesped="${e.nombreHuesped != null and !e.nombreHuesped.isEmpty() ? e.nombreHuesped : 'Huésped Eliminado / Desvinculado'}" th:data-hab="${e.numeroHabitacion}" th:data-in="${e.fechaIngreso}" th:data-out="${e.fechaSalida}" th:data-cant="${e.cantidadHuespedes}" th:data-tot="${e.totalPagar}" th:data-est="${e.estado != null ? e.estado : 'Por Cobrar'}" th:data-observaciones="${e.observaciones}" onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'), this.getAttribute('data-observaciones'))">
-											<i class="fas fa-eye"></i>
-										</button>
-										<a th:if="${e.estado != 'Pagado'}" th:href="@{/estadia/editar/{id}(id=${e.idEstadia})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
-											<i class="fas fa-pencil-alt"></i>
-										</a>
-										<button th:if="${e.estado == 'Pagado'}" type="button" class="btn btn-sm btn-outline-secondary me-2 shadow-sm disabled" style="opacity: 0.4; cursor: not-allowed;" title="No editable (Estadía pagada)" disabled>
-											<i class="fas fa-pencil-alt"></i>
-										</button>
-										<a th:if="${e.estado != 'Pagado'}" th:href="@{/estadia/eliminar/{id}(id=${e.idEstadia})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar esta estadía?');">
-											<i class="fas fa-trash"></i>
-										</a>
-										<button th:if="${e.estado == 'Pagado'}" type="button" class="btn btn-sm btn-outline-secondary shadow-sm disabled" style="opacity: 0.4; cursor: not-allowed;" title="No eliminable (Estadía pagada)" disabled>
-=======
+								<tr th:each="e : ${estadias}" th:data-est-id="${e.idEstadia}" th:data-est-hab="${e.numeroHabitacion}" th:data-est-total="${e.totalPagar}">
 									<td class="ps-4"><span
 										class="badge bg-secondary rounded-pill shadow-sm"
 										th:text="'#' + ${e.idEstadia}">#1</span></td>
@@ -144,7 +90,7 @@
 										th:class="${e.estado == 'Pagado' ? 'badge bg-success shadow-sm px-3 py-2' : 'badge bg-warning text-dark shadow-sm px-3 py-2'}">
 									</span></td>
 									<td th:text="${e.cantidadHuespedes}">2</td>
-									<td th:text="'$' + ${e.totalPagar}">$100.00</td>
+									<td class="estadia-gran-total fw-bold text-dark" th:text="'$' + ${e.totalPagar}">$100.00</td>
 									<td class="text-end pe-4">
 										<button type="button"
 											class="btn btn-sm btn-outline-info me-2 shadow-sm"
@@ -156,7 +102,8 @@
 											th:data-tot="${e.totalPagar}"
 											th:data-est="${e.estado != null ? e.estado : 'Por Cobrar'}"
 											th:data-observaciones="${e.observaciones}"
-											onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'), this.getAttribute('data-observaciones'))">
+											th:data-dias="${e.dias}"
+											onclick="verDetalleEstadia(this.getAttribute('data-id'), this.getAttribute('data-huesped'), this.getAttribute('data-hab'), this.getAttribute('data-in'), this.getAttribute('data-out'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'), this.getAttribute('data-observaciones'), this.getAttribute('data-dias'))">
 											<i class="fas fa-eye"></i>
 										</button> <a th:if="${e.estado != 'Pagado'}"
 										th:href="@{/estadia/editar/{id}(id=${e.idEstadia})}"
@@ -179,7 +126,6 @@
 											class="btn btn-sm btn-outline-secondary shadow-sm disabled"
 											style="opacity: 0.4; cursor: not-allowed;"
 											title="No eliminable (Estadía pagada)" disabled>
->>>>>>> Stashed changes
 											<i class="fas fa-trash"></i>
 										</button>
 									</td>
@@ -188,33 +134,57 @@
 									<td colspan="10" class="text-center py-5 text-secondary">
 										<i class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>
 										<p class="fs-5 fw-medium mb-1">No hay estadías registradas</p>
-<<<<<<< Updated upstream
-										<p class="small mb-0">Comienza agregando una nueva estadía al sistema.</p>
-=======
 										<p class="small mb-0">Comienza agregando una nueva estadía
 											al sistema.</p>
->>>>>>> Stashed changes
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-<<<<<<< Updated upstream
-			<script th:inline="javascript">
-=======
 				<script th:inline="javascript">
->>>>>>> Stashed changes
 				/*<![CDATA[*/
 				const globalMinibares = /*[[${minibares}]]*/ [];
 				const globalDetalles = /*[[${detalles}]]*/ [];
 				/*]]>*/
 
-				function verDetalleEstadia(id, huesped, hab, ingreso, salida, cant, total, estado, observaciones) {
+				document.addEventListener("DOMContentLoaded", function() {
+					if (typeof globalMinibares !== 'undefined' && typeof globalDetalles !== 'undefined') {
+						const rows = document.querySelectorAll("tr[data-est-id]");
+						rows.forEach(row => {
+							const id = row.getAttribute('data-est-id');
+							const hab = row.getAttribute('data-est-hab');
+							const baseTotal = parseFloat(row.getAttribute('data-est-total')) || 0;
+							
+							let minibarTotal = 0;
+							if (globalMinibares) {
+								globalMinibares.filter(m => String(m.numeroHabitacion) === String(hab)).forEach(m => {
+									minibarTotal += parseFloat(m.total || 0);
+								});
+							}
+							
+							let serviciosTotal = 0;
+							if (globalDetalles) {
+								globalDetalles.filter(d => String(d.idEstadia) === String(id)).forEach(s => {
+									serviciosTotal += parseFloat(s.total || 0);
+								});
+							}
+							
+							const granTotal = baseTotal + minibarTotal + serviciosTotal;
+							const totalCell = row.querySelector('.estadia-gran-total');
+							if(totalCell) {
+								totalCell.innerText = '$' + granTotal.toFixed(2);
+							}
+						});
+					}
+				});
+
+				function verDetalleEstadia(id, huesped, hab, ingreso, salida, cant, total, estado, observaciones, dias) {
 					document.getElementById('det-est-huesped').innerText = (huesped && huesped !== 'null' && huesped !== '#null' && huesped !== '') ? huesped : 'Huésped Eliminado / Desvinculado';
 					document.getElementById('det-est-hab').innerText = hab || 'N/A';
 					document.getElementById('det-est-ingreso').innerText = (ingreso || '').replace('T', ' ');
 					document.getElementById('det-est-salida').innerText = (salida || '').replace('T', ' ');
+					if (document.getElementById('det-est-dias')) document.getElementById('det-est-dias').innerText = dias || '1';
 					document.getElementById('det-est-cant').innerText = cant || '1';
 					document.getElementById('det-est-total').innerText = '$' + parseFloat(total || 0).toFixed(2);
 					const estElem = document.getElementById('det-est-estado');
@@ -245,22 +215,40 @@
 					const miniList = globalMinibares ? globalMinibares.filter(m => String(m.numeroHabitacion) === String(hab)) : [];
 					const miniContainer = document.getElementById('det-est-minibar-list');
 					let minibarPendiente = false;
+					let totalMinibarPend = 0;
 					if (miniContainer) {
 						if (miniList.length === 0) {
 							miniContainer.innerHTML = '<p class="text-muted small mb-0 fst-italic">No hay consumos de minibar registrados para esta habitación.</p>';
 						} else {
 							let html = '<div class="table-responsive"><table class="table table-sm table-borderless mb-0 align-middle"><thead><tr class="text-secondary small border-bottom"><th>Producto</th><th class="text-center">Cant.</th><th class="text-end">Total</th><th class="text-end">Estado</th></tr></thead><tbody>';
+                            let agruparMinibar = {};
 							miniList.forEach(m => {
 								const est = m.estado || 'Por Cobrar';
-								if (est !== 'Pagado') minibarPendiente = true;
-								const badgeCls = (est === 'Pagado') ? 'badge bg-success' : 'badge bg-warning text-dark';
-								html += `<tr>
-									<td class="fw-medium">${m.nombreProducto || 'N/A'}</td>
-									<td class="text-center">${m.cantidad || 0}</td>
-									<td class="text-end fw-semibold text-dark">$${parseFloat(m.total || 0).toFixed(2)}</td>
-									<td class="text-end"><span class="${badgeCls}">${est}</span></td>
-								</tr>`;
+								if (est !== 'Pagado') { minibarPendiente = true; }
+								totalMinibarPend += parseFloat(m.total || 0);
+                                if (m.detalles && m.detalles.length > 0) {
+                                    m.detalles.forEach(d => {
+                                        let key = (d.nombreProducto || 'N/A') + '|' + est;
+                                        if(!agruparMinibar[key]) {
+                                            agruparMinibar[key] = { nombre: d.nombreProducto || 'N/A', cant: 0, total: 0, est: est };
+                                        }
+                                        agruparMinibar[key].cant += parseInt(d.cantidad || 0);
+                                        agruparMinibar[key].total += parseFloat(d.subtotal || 0);
+                                    });
+                                } else {
+                                    let key = 'Cuenta Minibar #' + m.idMinibar + '|' + est;
+                                    agruparMinibar[key] = { nombre: 'Cuenta Minibar #' + m.idMinibar, cant: '-', total: parseFloat(m.total || 0), est: est };
+                                }
 							});
+                            Object.values(agruparMinibar).forEach(item => {
+                                const badgeCls = (item.est === 'Pagado') ? 'badge bg-success' : 'badge bg-warning text-dark';
+                                html += `<tr>
+                                    <td class="fw-medium">${item.nombre}</td>
+                                    <td class="text-center">${item.cant}</td>
+                                    <td class="text-end fw-semibold text-dark">$${parseFloat(item.total).toFixed(2)}</td>
+                                    <td class="text-end"><span class="${badgeCls}">${item.est}</span></td>
+                                </tr>`;
+                            });
 							html += '</tbody></table></div>';
 							miniContainer.innerHTML = html;
 						}
@@ -270,22 +258,40 @@
 					const servList = globalDetalles ? globalDetalles.filter(d => String(d.idEstadia) === String(id)) : [];
 					const servContainer = document.getElementById('det-est-servicios-list');
 					let serviciosPendientes = false;
+					let totalServiciosPend = 0;
 					if (servContainer) {
 						if (servList.length === 0) {
 							servContainer.innerHTML = '<p class="text-muted small mb-0 fst-italic">No hay consumos de servicios registrados para esta estadía.</p>';
 						} else {
 							let html = '<div class="table-responsive"><table class="table table-sm table-borderless mb-0 align-middle"><thead><tr class="text-secondary small border-bottom"><th>Servicio</th><th class="text-center">Cant.</th><th class="text-end">Total</th><th class="text-end">Estado</th></tr></thead><tbody>';
+                            let agruparServicios = {};
 							servList.forEach(s => {
 								const est = s.estado || 'Por Cobrar';
-								if (est !== 'Pagado') serviciosPendientes = true;
-								const badgeCls = (est === 'Pagado') ? 'badge bg-success' : 'badge bg-warning text-dark';
-								html += `<tr>
-									<td class="fw-medium">${s.nombreServicio || 'N/A'}</td>
-									<td class="text-center">${s.cantidad || 0}</td>
-									<td class="text-end fw-semibold text-dark">$${parseFloat(s.total || 0).toFixed(2)}</td>
-									<td class="text-end"><span class="${badgeCls}">${est}</span></td>
-								</tr>`;
+								if (est !== 'Pagado') { serviciosPendientes = true; }
+								totalServiciosPend += parseFloat(s.total || 0);
+                                if (s.items && s.items.length > 0) {
+                                    s.items.forEach(item => {
+                                        let key = (item.nombreServicio || 'N/A') + '|' + est;
+                                        if(!agruparServicios[key]) {
+                                            agruparServicios[key] = { nombre: item.nombreServicio || 'N/A', cant: 0, total: 0, est: est };
+                                        }
+                                        agruparServicios[key].cant += parseInt(item.cantidad || 0);
+                                        agruparServicios[key].total += parseFloat(item.total || 0);
+                                    });
+                                } else {
+                                    let key = 'Cuenta Servicio #' + s.idDetalle + '|' + est;
+                                    agruparServicios[key] = { nombre: 'Cuenta Servicio #' + s.idDetalle, cant: '-', total: parseFloat(s.total || 0), est: est };
+                                }
 							});
+                            Object.values(agruparServicios).forEach(item => {
+                                const badgeCls = (item.est === 'Pagado') ? 'badge bg-success' : 'badge bg-warning text-dark';
+                                html += `<tr>
+                                    <td class="fw-medium">${item.nombre}</td>
+                                    <td class="text-center">${item.cant}</td>
+                                    <td class="text-end fw-semibold text-dark">$${parseFloat(item.total).toFixed(2)}</td>
+                                    <td class="text-end"><span class="${badgeCls}">${item.est}</span></td>
+                                </tr>`;
+                            });
 							html += '</tbody></table></div>';
 							servContainer.innerHTML = html;
 						}
@@ -294,8 +300,39 @@
 					// Update payment rules & alert
 					const alertBox = document.getElementById('det-est-alert');
 					const btnPagar = document.getElementById('det-btn-pagar');
+					const btnPagarTodo = document.getElementById('det-btn-pagar-todo');
+					const rowGranTotal = document.getElementById('row-gran-total');
+					const granTotalElem = document.getElementById('det-gran-total');
+					const rowTotalMinibar = document.getElementById('row-total-minibar');
+					const detTotalMinibar = document.getElementById('det-total-minibar');
+					const rowTotalServicios = document.getElementById('row-total-servicios');
+					const detTotalServicios = document.getElementById('det-total-servicios');
+					
+					let granTotal = parseFloat(total || 0) + totalMinibarPend + totalServiciosPend;
+					if (granTotalElem) granTotalElem.innerText = '$' + granTotal.toFixed(2);
+
+					if (rowTotalMinibar && detTotalMinibar) {
+						if (totalMinibarPend > 0) {
+							rowTotalMinibar.style.setProperty('display', 'flex', 'important');
+							detTotalMinibar.innerText = '+ $' + totalMinibarPend.toFixed(2);
+						} else {
+							rowTotalMinibar.style.setProperty('display', 'none', 'important');
+						}
+					}
+
+					if (rowTotalServicios && detTotalServicios) {
+						if (totalServiciosPend > 0) {
+							rowTotalServicios.style.setProperty('display', 'flex', 'important');
+							detTotalServicios.innerText = '+ $' + totalServiciosPend.toFixed(2);
+						} else {
+							rowTotalServicios.style.setProperty('display', 'none', 'important');
+						}
+					}
+
 					if (estado === 'Pagado') {
 						if (btnPagar) btnPagar.style.display = 'none';
+						if (btnPagarTodo) btnPagarTodo.style.display = 'none';
+						if (rowGranTotal) rowGranTotal.style.setProperty('display', 'flex', 'important');
 						if (alertBox) {
 							alertBox.className = 'alert alert-success d-flex align-items-center mb-0 small shadow-sm';
 							alertBox.innerHTML = '<i class="fas fa-check-circle fs-5 me-2" style="margin-right: 8px;"></i> <div><strong>Cuenta Pagada:</strong> Esta estadía ha sido finalizada y pagada en su totalidad.</div>';
@@ -304,9 +341,14 @@
 					} else {
 						if (minibarPendiente || serviciosPendientes) {
 							if (btnPagar) btnPagar.style.display = 'none';
+							if (btnPagarTodo) {
+								btnPagarTodo.style.display = 'inline-block';
+								btnPagarTodo.href = '/estadia/pagarTodo/' + id;
+							}
+							if (rowGranTotal) rowGranTotal.style.setProperty('display', 'flex', 'important');
 							if (alertBox) {
 								alertBox.className = 'alert alert-warning d-flex align-items-center mb-0 small shadow-sm';
-								alertBox.innerHTML = '<i class="fas fa-exclamation-triangle fs-5 me-2" style="margin-right: 8px;"></i> <div><strong>Atención:</strong> No se puede finalizar ni pagar la estadía. Existen consumos de Minibar o Servicios pendientes ("Por Cobrar"). Por favor cóbrelos en sus módulos respectivos primero para habilitar el pago.</div>';
+								alertBox.innerHTML = '<i class="fas fa-exclamation-triangle fs-5 me-2" style="margin-right: 8px;"></i> <div><strong>Atención:</strong> Existen cuentas pendientes. Puede pagarlas individualmente en sus módulos o usar el botón "Pagar Todo".</div>';
 								alertBox.style.display = 'flex';
 							}
 						} else {
@@ -314,6 +356,8 @@
 								btnPagar.style.display = 'inline-block';
 								btnPagar.href = '/estadia/pagar/' + id;
 							}
+							if (btnPagarTodo) btnPagarTodo.style.display = 'none';
+							if (rowGranTotal) rowGranTotal.style.setProperty('display', 'flex', 'important');
 							if (alertBox) {
 								alertBox.className = 'alert alert-info d-flex align-items-center mb-0 small shadow-sm';
 								alertBox.innerHTML = '<i class="fas fa-info-circle fs-5 me-2" style="margin-right: 8px;"></i> <div><strong>Listo para cobro:</strong> Todas las cuentas adicionales están cobradas. Ahora puede proceder con el pago de la estadía.</div>';
@@ -325,152 +369,6 @@
 					$('#detalleEstadiaModal').modal('show');
 				}
 			</script>
-<<<<<<< Updated upstream
-<div class="modal fade" id="detalleEstadiaModal" tabindex="-1" aria-labelledby="detalleEstadiaLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered modal-lg">
-					<div class="modal-content rounded-4 shadow border-0">
-						<div class="modal-header bg-light border-bottom-0 pb-3 pt-4 px-4 d-flex justify-content-between align-items-center">
-							<h5 class="modal-title fw-bold text-dark mb-0 d-flex align-items-center"><i class="fas fa-file-invoice-dollar me-2 text-primary" style="font-size: 1.25rem; margin-right: 10px;"></i> Detalle de Estadía</h5>
-							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" onclick="$('#detalleEstadiaModal').modal('hide');" aria-label="Close"><span>&times;</span></button>
-						</div>
-						<div class="modal-body px-4 pt-3 pb-4">
-							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
-								<h6 class="text-muted mb-3 text-uppercase small fw-bold border-bottom pb-2">Información del Cliente</h6>
-								<div class="d-flex justify-content-between mb-2">
-									<span class="text-secondary">A nombre de:</span>
-									<span class="fw-semibold text-dark" id="det-est-huesped"></span>
-								</div>
-								<div class="d-flex justify-content-between mb-2">
-									<span class="text-secondary">Habitación:</span>
-									<span class="fw-bold text-success" id="det-est-hab"></span>
-								</div>
-								<div class="d-flex justify-content-between">
-									<span class="text-secondary">Cant. Huéspedes:</span>
-									<span class="fw-semibold text-dark" id="det-est-cant"></span>
-								</div>
-							</div>
-							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
-								<h6 class="text-muted mb-2 text-uppercase small fw-bold border-bottom pb-2 d-flex align-items-center"><i class="fas fa-wine-bottle me-2 text-primary" style="margin-right: 8px;"></i> Consumos de Minibar</h6>
-								<div id="det-est-minibar-list"></div>
-							</div>
-							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
-								<h6 class="text-muted mb-2 text-uppercase small fw-bold border-bottom pb-2 d-flex align-items-center"><i class="fas fa-concierge-bell me-2 text-primary" style="margin-right: 8px;"></i> Consumos de Servicios</h6>
-								<div id="det-est-servicios-list"></div>
-							</div>
-							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
-								<h6 class="text-muted mb-3 text-uppercase small fw-bold border-bottom pb-2">Resumen de Cuenta de Estadía</h6>
-								<div class="d-flex justify-content-between mb-2">
-									<span class="text-secondary">Check-in:</span>
-									<span class="fw-semibold text-dark" id="det-est-ingreso"></span>
-								</div>
-								<div class="d-flex justify-content-between mb-3">
-									<span class="text-secondary">Check-out:</span>
-									<span class="fw-semibold text-dark" id="det-est-salida"></span>
-								</div>
-								<div class="d-flex justify-content-between align-items-center pt-2 border-top mb-2">
-									<span class="fw-bold fs-5 text-dark">TOTAL PAGAR (ESTADÍA)</span>
-									<span class="fw-bold fs-4 text-primary" id="det-est-total"></span>
-								</div>
-								<div class="d-flex justify-content-between align-items-center pt-2 border-top">
-									<span class="text-secondary fw-semibold">Estado de Pago:</span>
-									<span id="det-est-estado" class="badge px-3 py-2 fs-6"></span>
-								</div>
-							</div>
-							<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
-								<h6 class="text-muted mb-2 text-uppercase small fw-bold border-bottom pb-2 d-flex align-items-center"><i class="fas fa-sticky-note me-2 text-primary" style="margin-right: 8px;"></i> Observaciones</h6>
-								<form id="formObservaciones" th:action="@{/estadia/guardarObservaciones}" method="post">
-									<input type="hidden" id="det-obs-estadia-id" name="idEstadia" value="0" />
-									<textarea id="det-est-observaciones" name="observaciones" class="form-control mb-2" rows="3" placeholder="Ej: Solicita cama extra, alérgico a mariscos, llegada tardía..."></textarea>
-									<div class="text-end">
-										<button id="det-btn-guardar-obs" type="submit" class="btn btn-sm btn-outline-primary shadow-sm"><i class="fas fa-save me-1" style="margin-right: 4px;"></i> Guardar Observación</button>
-									</div>
-								</form>
-							</div>
-							<div id="det-est-alert" class="alert alert-info d-flex align-items-center mb-0 small shadow-sm" role="alert" style="display: none;"></div>
-						</div>
-<div class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
-	<a id="det-btn-pagar" href="#" class="btn btn-success px-4 shadow-sm" onclick="return confirm('¿Confirmas el pago de esta estadía? Al pagar, la habitación pasará automáticamente a Disponible.');"><i class="fas fa-money-bill-wave me-2"></i> Pagar</a>
-</div>
-					</div>
-				</div>
-			</div>
-
-<div class="modal fade" id="estadiaModal" tabindex="-1" role="dialog"
-				aria-labelledby="estadiaModalLabel" aria-hidden="true"
-				th:classappend="${showModal} ? 'show d-block' : ''">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content border-0 shadow-lg rounded-4">
-
-						<div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
-							<h5 class="modal-title fw-bold text-primary" id="estadiaModalLabel"
-								th:text="${estadia != null and estadia.idEstadia != 0} ? 'Editar Estadía #' + ${estadia.idEstadia} : 'Registrar Nueva Estadía'">
-								Registrar Nueva Estadía</h5>
-							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" data-dismiss="modal"
-								aria-label="Close"
-								onclick="window.location.href='/estadia'"><span>&times;</span></button>
-						</div>
-
-						<form th:action="@{/estadia/guardar}" th:object="${estadia}" method="post">
-
-							<input type="hidden" th:field="*{idEstadia}" />
-
-							<div class="modal-body px-4 pt-4">
-								<div class="row">
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold text-primary"><i class="fas fa-user-circle me-1" style="margin-right: 6px;"></i>Huésped</label>
-										<select th:field="*{idHuesped}" class="form-select" required>
-											<option value="">Seleccione Huésped</option>
-											<option th:each="h : ${huespedes}" th:value="${h.idHuesped}" th:text="${h.nombre + ' ' + h.apellido}"></option>
-										</select>
-									</div>
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold text-success"><i class="fas fa-door-closed me-1" style="margin-right: 6px;"></i>Habitación</label>
-										<select th:field="*{idHabitacion}" class="form-select" required>
-											<option value="">Seleccione Habitación</option>
-											<option th:each="hab : ${habitaciones}" th:value="${hab.idHabitacion}" th:text="'Hab. ' + ${hab.numero}" th:data-precio="${hab.precio}"></option>
-										</select>
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Fecha Ingreso</label>
-										<input type="datetime-local" th:field="*{fechaIngreso}" class="form-control" required />
-									</div>
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Fecha Salida</label>
-										<input type="datetime-local" th:field="*{fechaSalida}" class="form-control" required />
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-12 col-md-4 form-group mb-3">
-										<label class="form-label fw-semibold">Cantidad Huéspedes</label>
-										<input type="number" th:field="*{cantidadHuespedes}" class="form-control" required min="1" />
-									</div>
-									<div class="col-12 col-md-4 form-group mb-3">
-										<label class="form-label fw-semibold">Total Pagar ($)</label>
-										<input type="number" step="0.01" th:field="*{totalPagar}" class="form-control" required min="0" />
-									</div>
-									<div class="col-12 col-md-4 form-group mb-3">
-										<label class="form-label fw-semibold">Estado</label>
-										<input type="text" class="form-control bg-light text-secondary fw-semibold" value="Por Cobrar" readonly tabindex="-1" title="El estado se actualiza automáticamente a 'Pagado' al realizar el cobro desde el detalle" />
-										<input type="hidden" th:field="*{estado}" value="Por Cobrar" />
-									</div>
-								</div>
-
-							</div>
-
-							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
-								<a th:href="@{/estadia}" class="btn btn-secondary">Cancelar</a>
-								<button type="submit" class="btn btn-primary px-4"
-									th:text="${estadia.idEstadia != 0} ? 'Actualizar' : 'Guardar'">
-									Guardar</button>
-							</div>
-						</form>
-
-<script>
-=======
 				<div class="modal fade" id="detalleEstadiaModal" tabindex="-1"
 					aria-labelledby="detalleEstadiaLabel" aria-hidden="true">
 					<div class="modal-dialog modal-dialog-centered modal-lg">
@@ -483,13 +381,7 @@
 										style="font-size: 1.25rem; margin-right: 10px;"></i> Detalle
 									de Estadía
 								</h5>
-								<button type="button"
-									class="close btn btn-link text-dark p-0 m-0"
-									style="font-size: 1.5rem; text-decoration: none;"
-									onclick="$('#detalleEstadiaModal').modal('hide');"
-									aria-label="Close">
-									<span>&times;</span>
-								</button>
+								
 							</div>
 							<div class="modal-body px-4 pt-3 pb-4">
 								<div class="border rounded-3 p-3 bg-white shadow-sm mb-3">
@@ -533,15 +425,30 @@
 										<span class="text-secondary">Check-in:</span> <span
 											class="fw-semibold text-dark" id="det-est-ingreso"></span>
 									</div>
-									<div class="d-flex justify-content-between mb-3">
+									<div class="d-flex justify-content-between mb-2">
 										<span class="text-secondary">Check-out:</span> <span
 											class="fw-semibold text-dark" id="det-est-salida"></span>
 									</div>
+									<div class="d-flex justify-content-between mb-3">
+										<span class="text-secondary">Total Días:</span> <span
+											class="fw-semibold text-dark" id="det-est-dias"></span>
+									</div>
 									<div
 										class="d-flex justify-content-between align-items-center pt-2 border-top mb-2">
-										<span class="fw-bold fs-5 text-dark">TOTAL PAGAR
-											(ESTADÍA)</span> <span class="fw-bold fs-4 text-primary"
+										<span class="fw-bold fs-6 text-secondary">Costo Base (Estadía)</span> <span class="fw-bold fs-6 text-secondary"
 											id="det-est-total"></span>
+									</div>
+									<div id="row-total-minibar" class="d-flex justify-content-between align-items-center pt-2 border-top mb-2" style="display:none !important;">
+										<span class="fw-semibold text-secondary">Consumos de Minibar</span> 
+										<span class="fw-semibold text-dark" id="det-total-minibar"></span>
+									</div>
+									<div id="row-total-servicios" class="d-flex justify-content-between align-items-center pt-2 border-top mb-2" style="display:none !important;">
+										<span class="fw-semibold text-secondary">Servicios Adicionales</span> 
+										<span class="fw-semibold text-dark" id="det-total-servicios"></span>
+									</div>
+									<div id="row-gran-total" class="d-flex justify-content-between align-items-center pt-2 border-top mb-2 bg-light p-2 rounded">
+										<span class="fw-bold fs-5 text-primary">GRAN TOTAL (Todo Incluido)</span> 
+										<span class="fw-bold fs-4 text-primary" id="det-gran-total"></span>
 									</div>
 									<div
 										class="d-flex justify-content-between align-items-center pt-2 border-top">
@@ -577,10 +484,15 @@
 							</div>
 							<div
 								class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
+								<a id="det-btn-pagar-todo" href="#"
+									class="btn btn-danger px-4 shadow-sm me-2"
+									onclick="return confirm('¿Confirmas el pago TOTAL (Estadía + Consumos + Servicios)?');"
+									style="display: none;"><i
+									class="fas fa-money-bill-wave me-2"></i> Pagar Todo</a>
 								<a id="det-btn-pagar" href="#"
 									class="btn btn-success px-4 shadow-sm"
 									onclick="return confirm('¿Confirmas el pago de esta estadía? Al pagar, la habitación pasará automáticamente a Disponible.');"><i
-									class="fas fa-money-bill-wave me-2"></i> Pagar</a>
+									class="fas fa-money-bill-wave me-2"></i> Pagar Estadía</a>
 							</div>
 						</div>
 					</div>
@@ -598,13 +510,7 @@
 									id="estadiaModalLabel"
 									th:text="${estadia != null and estadia.idEstadia != 0} ? 'Editar Estadía #' + ${estadia.idEstadia} : 'Registrar Nueva Estadía'">
 									Registrar Nueva Estadía</h5>
-								<button type="button"
-									class="close btn btn-link text-dark p-0 m-0"
-									style="font-size: 1.5rem; text-decoration: none;"
-									data-dismiss="modal" aria-label="Close"
-									onclick="window.location.href='/estadia'">
-									<span>&times;</span>
-								</button>
+								
 							</div>
 
 							<form th:action="@{/estadia/guardar}" th:object="${estadia}"
@@ -618,11 +524,11 @@
 											<label class="form-label fw-semibold text-primary"> <i
 												class="fas fa-user-circle me-1" style="margin-right: 6px;"></i>Huésped
 											</label> <select th:field="*{idHuesped}" class="form-select" required
-												onchange="if(this.value === 'NUEVO') window.location.href='/huesped';">
+												onchange="if(this.value === '-1') window.location.href='/huesped';">
 												<option value="">Seleccione Huésped</option>
 												<option th:each="h : ${huespedes}" th:value="${h.idHuesped}"
 													th:text="${h.nombre + ' ' + h.apellido}"></option>
-											<option value="NUEVO" class="fw-bold" style="font-weight: bold;">+ Registrar nuevo</option>
+											<option value="-1" class="fw-bold" style="font-weight: bold;">+ Registrar nuevo</option>
 											</select>
 										</div>
 										<div class="col-12 col-md-6 form-group mb-3">
@@ -632,6 +538,7 @@
 												required>
 												<option value="">Seleccione Habitación</option>
 												<option th:each="hab : ${habitaciones}"
+													th:if="${hab.estado != 'Ocupada' or (estadia != null and hab.idHabitacion == estadia.idHabitacion)}"
 													th:value="${hab.idHabitacion}"
 													th:text="'Hab. ' + ${hab.numero}"
 													th:data-precio="${hab.precio}"></option>
@@ -685,12 +592,19 @@
 							</form>
 
 							<script>
->>>>>>> Stashed changes
     document.addEventListener("DOMContentLoaded", function() {
         const habSelect = document.getElementById('idHabitacion');
         const fIngreso = document.getElementById('fechaIngreso');
         const fSalida = document.getElementById('fechaSalida');
         const totalInput = document.getElementById('totalPagar');
+
+        if (fIngreso || fSalida) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const minDateTime = now.toISOString().slice(0, 16);
+            if (fIngreso) fIngreso.min = minDateTime;
+            if (fSalida) fSalida.min = minDateTime;
+        }
 
         function calcularTotal() {
             if (habSelect && fIngreso && fSalida && totalInput) {
@@ -717,11 +631,9 @@
         if(fIngreso) fIngreso.addEventListener('change', calcularTotal);
         if(fSalida) fSalida.addEventListener('change', calcularTotal);
     });
-<<<<<<< Updated upstream
-=======
     
     function comprobarRegistroNuevo(selectElement) {
-        if (selectElement.value === 'NUEVO') {
+        if (selectElement.value === '-1') {
             // Opción A: Si quieres redirigir a la pantalla de huésped
             window.location.href = '/huesped';
             
@@ -729,22 +641,14 @@
             // $('#huespedModal').modal('show');
         }
     }
->>>>>>> Stashed changes
 </script>
 
 
 
-<<<<<<< Updated upstream
-					</div>
-				</div>
-
-				<script th:inline="javascript">
-=======
 						</div>
 					</div>
 
 					<script th:inline="javascript">
->>>>>>> Stashed changes
 					document.addEventListener("DOMContentLoaded", function() {
 						/*[# th:if="${showModal}"]*/
 						if (typeof bootstrap !== 'undefined') {
@@ -756,38 +660,7 @@
 						/*[/]*/
 					});
 				</script>
-<<<<<<< Updated upstream
-				<style>
-					.modal.show.d-block {
-						z-index: 1055 !important;
-						background-color: rgba(0, 0, 0, 0.5) !important;
-					}
-					.modal-backdrop {
-						display: none !important;
-					}
-				</style>
-			</div>
-
-		</div>
-	</div>
-
-
-			<!-- Modal Factura Estadia -->
-			
-
-			
-    
-=======
-					<style>
-.modal.show.d-block {
-	z-index: 1055 !important;
-	background-color: rgba(0, 0, 0, 0.5) !important;
-}
-
-.modal-backdrop {
-	display: none !important;
-}
-</style>
+					
 				</div>
 
 			</div>
@@ -795,6 +668,5 @@
 
 
 		<!-- Modal Factura Estadia -->
->>>>>>> Stashed changes
 </body>
 </html>

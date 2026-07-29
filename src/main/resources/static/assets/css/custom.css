@@ -78,3 +78,69 @@ select option, .form-select option, select.form-control option {
     color: #6777ef !important;
     background-color: #f8f9fa !important;
 }
+
+/* ==========================================================================
+   Top Navbar Height Adjustment
+   ========================================================================== */
+.navbar-bg {
+    height: 70px !important;
+}
+
+.main-content {
+    padding-top: 85px !important;
+}
+
+
+/* ==========================================================================
+   Modal Backdrop Blur Effect
+   ========================================================================== */
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   Premium Modal Background Blur (Apple Glass Effect)
+   ========================================================================== */
+
+
+
+
+/* ==========================================================================
+   Premium Modal Backdrop (Blur + Dark Tint)
+   ========================================================================== */
+
+
+
+
+/* ==========================================================================
+   Global Modal Fix & Premium Blur (Glassmorphism)
+   ========================================================================== */
+/* 1. Hide native backdrop to fix Bootstrap stacking context bugs when modals are inside main-content */
+.modal-backdrop {
+    display: none !important;
+}
+
+/* 2. Elevate the modal wrapper to ensure it covers the sidebar and navbar */
+.modal.show {
+    z-index: 1055 !important;
+}
+
+/* 3. Create a pseudo-element backdrop that sits perfectly behind the modal dialog */
+.modal.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: -1;
+}

@@ -46,27 +46,25 @@
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Huésped</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Habitación</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3">Servicio</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Cantidad</th>
-									<th class="text-secondary fw-semibold border-bottom-0 py-3">Total</th>
+																		<th class="text-secondary fw-semibold border-bottom-0 py-3">Total</th>
 									<th class="text-secondary fw-semibold border-bottom-0 py-3 text-center">Estado</th>
 									<th class="text-end pe-4 text-secondary fw-semibold border-bottom-0 py-3 rounded-top-end">Acciones</th>
 								</tr>
 							</thead>
 							<tbody class="border-top-0">
 								<tr th:each="d : ${detalles}">
-									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="'#' + ${d.idDetalle}">#1</span></td>
+									<td class="ps-4"><span class="badge bg-secondary rounded-pill shadow-sm" th:text="${d.idDetalle}">#1</span></td>
 									<td class="fw-medium" th:text="${d.nombreHuesped}">Juan Perez</td>
 									<td th:text="${d.numeroHabitacion}">101</td>
-									<td th:text="${d.nombreServicio}">Spa</td>
-									<td th:text="${d.cantidad}">1</td>
-									<td class="fw-bold text-success" th:text="'$' + ${d.total}">$0.00</td>
+									<td><span class="text-secondary" th:text="${d.items != null and d.items.size() > 0 ? d.items.size() + ' Servicios' : 'Sin Servicios'}"></span></td>
+																		<td class="fw-bold text-success" th:text="'$' + ${d.total != null ? d.total : 0.0}">$0.00</td>
 									<td class="text-center">
 										<span th:text="${d.estado != null ? d.estado : 'Por Cobrar'}"
 											  th:class="${d.estado == 'Pagado' ? 'badge bg-success shadow-sm px-3 py-2' : 'badge bg-warning text-dark shadow-sm px-3 py-2'}">
 										</span>
 									</td>
 									<td class="text-end pe-4">
-										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${d.idDetalle}" th:data-hue="${d.nombreHuesped}" th:data-hab="${d.numeroHabitacion}" th:data-ser="${d.nombreServicio}" th:data-cant="${d.cantidad}" th:data-tot="${d.total}" th:data-est="${d.estado != null ? d.estado : 'Por Cobrar'}" onclick="verDetalleServicio(this.getAttribute('data-id'), this.getAttribute('data-hue'), this.getAttribute('data-hab'), this.getAttribute('data-ser'), this.getAttribute('data-cant'), this.getAttribute('data-tot'), this.getAttribute('data-est'))">
+										<button type="button" class="btn btn-sm btn-outline-info me-2 shadow-sm" title="Ver Detalle" th:data-id="${d.idDetalle}" th:data-hue="${d.nombreHuesped}" th:data-hab="${d.numeroHabitacion}" th:data-tot="${d.total}" th:data-est="${d.estado != null ? d.estado : 'Por Cobrar'}" onclick="verDetalleServicio(this.getAttribute('data-id'), this.getAttribute('data-hue'), this.getAttribute('data-hab'), this.getAttribute('data-tot'), this.getAttribute('data-est'))">
 											<i class="fas fa-eye"></i> Detalle
 										</button>
 										<a th:if="${d.estado != 'Pagado'}" th:href="@{/detalle/editar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-primary me-2 shadow-sm" title="Editar">
@@ -75,7 +73,7 @@
 										<button th:if="${d.estado == 'Pagado'}" type="button" class="btn btn-sm btn-outline-secondary me-2 shadow-sm disabled" style="opacity: 0.4; cursor: not-allowed;" title="No editable (Servicio pagado)" disabled>
 											<i class="fas fa-pencil-alt"></i>
 										</button>
-										<a th:if="${d.estado != 'Pagado'}" th:href="@{/detalle/eliminar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este detalle?');">
+										<a th:if="${d.estado != 'Pagado'}" th:href="@{/detalle/eliminar/{id}(id=${d.idDetalle})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este grupo de servicios?');">
 											<i class="fas fa-trash"></i>
 										</a>
 										<button th:if="${d.estado == 'Pagado'}" type="button" class="btn btn-sm btn-outline-secondary shadow-sm disabled" style="opacity: 0.4; cursor: not-allowed;" title="No eliminable (Servicio pagado)" disabled>
@@ -84,7 +82,7 @@
 									</td>
 								</tr>
 								<tr th:if="${#lists.isEmpty(detalles)}">
-									<td colspan="7" class="text-center py-5 text-secondary">
+									<td colspan="6" class="text-center py-5 text-secondary">
 										<i class="fas fa-inbox fa-3x d-block mb-3 opacity-50"></i>
 										<p class="fs-5 fw-medium mb-1">No hay consumos registrados</p>
 										<p class="small mb-0">Comienza asignando un consumo de servicio a una estadía.</p>
@@ -96,18 +94,19 @@
 				</div>
 			</div>
 
-			<script>
-				function verDetalleServicio(id, hue, hab, ser, cant, total, estado) {
+			<script th:inline="javascript">
+				const globalServiciosList = /*[[${detalles}]]*/ [];
+				function verDetalleServicio(id, hue, hab, total, estado) {
 					document.getElementById('det-ser-hue').innerText = hue || 'N/A';
 					document.getElementById('det-ser-hab').innerText = 'Hab. ' + (hab || 'N/A');
-					document.getElementById('det-ser-nom').innerText = ser || 'N/A';
-					document.getElementById('det-ser-cant').innerText = cant + ' un.';
-					document.getElementById('det-ser-tot').innerText = '$' + parseFloat(total).toFixed(2);
+					document.getElementById('det-ser-tot').innerText = '$' + parseFloat(total || 0).toFixed(2);
+					
 					const estElem = document.getElementById('det-ser-est');
 					if(estElem) {
 						estElem.innerText = estado || 'Por Cobrar';
 						estElem.className = (estado === 'Pagado') ? 'badge bg-success px-3 py-2 fs-6' : 'badge bg-warning text-dark px-3 py-2 fs-6';
 					}
+					
 					const btnPagar = document.getElementById('btn-ser-pagar');
 					if(btnPagar) {
 						if(estado === 'Pagado') {
@@ -117,15 +116,32 @@
 							btnPagar.href = '/detalle/pagar/' + id;
 						}
 					}
+
+					const estadia = globalServiciosList ? globalServiciosList.find(s => String(s.idDetalle) === String(id)) : null;
+					const container = document.getElementById('det-ser-prod-container');
+					
+					if (estadia && estadia.items && estadia.items.length > 0) {
+						let html = '<ul class="list-group list-group-flush">';
+						estadia.items.forEach(d => {
+							html += '<li class="list-group-item px-0 d-flex justify-content-between align-items-center">' +
+									'<div><span class="fw-bold">' + d.nombreServicio + '</span> <span class="text-muted small mx-2">x' + d.cantidad + '</span></div>' +
+									'<span class="fw-medium">$' + parseFloat(d.total || 0).toFixed(2) + '</span>' +
+									'</li>';
+						});
+						html += '</ul>';
+						container.innerHTML = html;
+					} else {
+						container.innerHTML = '<p class="text-muted small mb-0">No hay servicios.</p>';
+					}
+					
 					$('#detalleServicioModal').modal('show');
 				}
 			</script>
 			<div class="modal fade" id="detalleServicioModal" tabindex="-1" aria-labelledby="detalleServicioLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered modal-sm">
+				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content rounded-4 shadow border-0">
 						<div class="modal-header bg-light border-bottom-0 pb-3 pt-4 px-4 d-flex justify-content-between align-items-center">
-							<h5 class="modal-title fw-bold text-dark mb-0 d-flex align-items-center"><i class="fas fa-concierge-bell me-2 text-primary" style="margin-right: 8px;"></i> Detalle Servicio</h5>
-							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" onclick="$('#detalleServicioModal').modal('hide');" aria-label="Close"><span>&times;</span></button>
+							<h5 class="modal-title fw-bold text-dark mb-0 d-flex align-items-center"><i class="fas fa-concierge-bell me-2 text-primary" style="margin-right: 8px;"></i> Detalle de Servicios</h5>
 						</div>
 						<div class="modal-body px-4 pt-3 pb-4">
 							<div class="text-center mb-4">
@@ -133,29 +149,25 @@
 								<span class="badge bg-info text-dark mt-1 px-3 py-1" id="det-ser-hab"></span>
 							</div>
 							<div class="border-top border-bottom py-3 mb-3">
-								<div class="d-flex justify-content-between mb-1">
-									<span class="text-secondary fw-semibold">Servicio:</span>
-									<span class="text-dark fw-bold text-end" id="det-ser-nom"></span>
-								</div>
-								<div class="d-flex justify-content-between mb-1">
-									<span class="text-secondary fw-semibold">Cantidad:</span>
-									<span class="text-dark fw-bold" id="det-ser-cant"></span>
-								</div>
-								<div class="d-flex justify-content-between">
-									<span class="text-secondary fw-semibold">Estado:</span>
-									<span id="det-ser-est" class="badge px-3 py-2 fs-6"></span>
-								</div>
+								<h6 class="text-secondary fw-bold mb-3 text-uppercase fs-7">Servicios Consumidos</h6>
+								<div id="det-ser-prod-container"></div>
+							</div>
+							<div class="d-flex justify-content-between mb-3 px-2">
+								<span class="text-secondary fw-semibold">Estado de Cuenta:</span>
+								<span id="det-ser-est" class="badge px-3 py-2 fs-6"></span>
 							</div>
 							<div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
-								<span class="fw-bold fs-6 text-dark text-uppercase">Total</span>
+								<span class="fw-bold fs-6 text-dark text-uppercase">Total General</span>
 								<span class="fw-bold fs-3 text-primary" id="det-ser-tot"></span>
 							</div>
 						</div>
 						<div class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
-							<a id="btn-ser-pagar" href="#" class="btn btn-success px-4 shadow-sm w-100" onclick="return confirm('¿Confirmas el cobro de este servicio?');"><i class="fas fa-money-bill-wave me-2"></i> Pagar Servicio</a>
+							<a id="btn-ser-pagar" href="#" class="btn btn-success px-4 shadow-sm w-100" onclick="return confirm('¿Confirmas el cobro de todos estos servicios?');"><i class="fas fa-money-bill-wave me-2"></i> Pagar Cuenta</a>
 						</div>
 					</div>
 				</div>
+			</div>
+
 			</div>
 
 			<div class="modal fade" id="detalleModal" tabindex="-1" role="dialog"
@@ -168,9 +180,7 @@
 							<h5 class="modal-title fw-bold text-primary" id="detalleModalLabel"
 								th:text="${detalle != null and detalle.idDetalle != 0} ? 'Editar Detalle #' + ${detalle.idDetalle} : 'Registrar Nuevo Consumo'">
 								Registrar Nuevo Consumo</h5>
-							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" data-dismiss="modal"
-								aria-label="Close"
-								th:onclick="|window.location.href='/detalle'|"><span>&times;</span></button>
+							
 						</div>
 
 						<form th:action="@{/detalle/guardar}" th:object="${detalle}" method="post">
@@ -180,31 +190,67 @@
 							<div class="modal-body px-4 pt-4">
 								<div class="row">
 									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Estadía</label>
+										<label class="form-label fw-semibold">Habitación</label>
 										<select th:field="*{idEstadia}" class="form-select" required>
-											<option value="">Seleccione Estadía</option>
-											<option th:each="e : ${estadias}" th:value="${e.idEstadia}" th:text="'Estadía #' + ${e.idEstadia}"></option>
-										</select>
-									</div>
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Servicio</label>
-										<select th:field="*{idServicio}" id="idServicio" class="form-select" required>
-											<option value="">Seleccione Servicio</option>
-											<option th:each="s : ${servicios}" th:value="${s.idServicio}" th:text="${s.nombreServicio}" th:data-precio="${s.tarifa}"></option>
+											<option value="">Seleccione Habitación</option>
+											<option th:each="e : ${estadias}" th:if="${e.estado != 'Cancelado' and e.estado != 'Finalizado' and e.estado != 'Pagado' or (detalle != null and e.idEstadia == detalle.idEstadia)}" th:value="${e.idEstadia}" th:text="'Hab. ' + ${e.numeroHabitacion} + ' (' + ${e.nombreHuesped} + ')'"></option>
 										</select>
 									</div>
 								</div>
 
-								<div class="row">
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Cantidad</label>
-										<input type="number" th:field="*{cantidad}" id="cantidad" class="form-control" required min="1" />
-									</div>
-									<div class="col-12 col-md-6 form-group mb-3">
-										<label class="form-label fw-semibold">Total ($)</label>
-										<input type="number" step="0.01" th:field="*{total}" id="total" class="form-control" required min="0" />
-									</div>
-								</div>
+								<div id="servicios-container">
+                                    <th:block th:if="${detalle.idDetalle > 0 and detalle.idServicios != null}">
+                                        <div th:each="sid, iter : ${detalle.idServicios}" class="row servicio-row border-bottom pb-2 mb-3">
+                                            <div class="col-12 col-md-5 form-group mb-2">
+                                                <label class="form-label fw-semibold">Servicio</label>
+                                                <select name="idServicios" class="form-select detalle-servicio" required>
+                                                    <option value="">Seleccione Servicio</option>
+                                                    <option th:each="s : ${servicios}" th:value="${s.idServicio}" th:text="${s.nombreServicio}" th:data-precio="${s.tarifa}" th:selected="${s.idServicio == sid}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4 col-md-3 form-group mb-2">
+                                                <label class="form-label fw-semibold">Cantidad</label>
+                                                <input type="number" name="cantidades" th:value="${detalle.cantidades[iter.index]}" class="form-control detalle-cantidad" required min="1" />
+                                            </div>
+                                            <div class="col-5 col-md-3 form-group mb-2">
+                                                <label class="form-label fw-semibold">Total ($)</label>
+                                                <input type="number" step="0.01" name="totales" th:value="${detalle.totales[iter.index]}" class="form-control detalle-total bg-light" required min="0" readonly />
+                                            </div>
+                                            <div class="col-3 col-md-1 form-group mb-2 d-flex flex-column justify-content-end remove-btn-col" th:style="${iter.index == 0 ? 'display:none !important;' : ''}"><label class="form-label fw-semibold d-none d-md-block">&nbsp;</label>
+                                                <button type="button" class="btn btn-outline-danger w-100 remove-servicio-btn" th:if="${iter.index > 0}"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </th:block>
+
+                                    <th:block th:if="${detalle.idDetalle == 0}">
+                                        <div class="row servicio-row border-bottom pb-2 mb-3">
+                                            <div class="col-12 col-md-5 form-group mb-2">
+                                                <label class="form-label fw-semibold">Servicio</label>
+                                                <select name="idServicios" class="form-select detalle-servicio" required>
+                                                    <option value="">Seleccione Servicio</option>
+                                                    <option th:each="s : ${servicios}" th:value="${s.idServicio}" th:text="${s.nombreServicio}" th:data-precio="${s.tarifa}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4 col-md-3 form-group mb-2">
+                                                <label class="form-label fw-semibold">Cantidad</label>
+                                                <input type="number" name="cantidades" class="form-control detalle-cantidad" required min="1" />
+                                            </div>
+                                            <div class="col-5 col-md-3 form-group mb-2">
+                                                <label class="form-label fw-semibold">Total ($)</label>
+                                                <input type="number" step="0.01" name="totales" class="form-control detalle-total bg-light" required min="0" readonly />
+                                            </div>
+                                            <div class="col-3 col-md-1 form-group mb-2 d-flex flex-column justify-content-end remove-btn-col" style="display:none !important;"><label class="form-label fw-semibold d-none d-md-block">&nbsp;</label>
+                                                <button type="button" class="btn btn-outline-danger w-100 remove-servicio-btn"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </div>
+                                <div class="row mb-2" id="btn-add-row-container">
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="btn-add-servicio"><i class="fas fa-plus me-1"></i> Añadir otro servicio</button>
+                                    </div>
+                                </div>
+                                </th:block>
 							</div>
 
 							<div class="modal-footer border-top-0 px-4 pb-4 pt-3">
@@ -217,24 +263,58 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const servSelect = document.getElementById('idServicio');
-        const cantInput = document.getElementById('cantidad');
-        const totalInput = document.getElementById('total');
-
-        function calcularTotalServicio() {
-            if (servSelect && cantInput && totalInput) {
-                if (servSelect.value && cantInput.value) {
-                    const selectedOption = servSelect.options[servSelect.selectedIndex];
-                    const tarifa = parseFloat(selectedOption.getAttribute('data-precio') || 0);
-                    const cantidad = parseInt(cantInput.value || 0);
-                    
-                    totalInput.value = (tarifa * cantidad).toFixed(2);
-                }
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('detalle-servicio')) {
+                calcularFila(e.target.closest('.servicio-row'));
+            }
+        });
+        document.addEventListener('input', function(e) {
+            if (e.target && e.target.classList.contains('detalle-cantidad')) {
+                calcularFila(e.target.closest('.servicio-row'));
+            }
+        });
+        function calcularFila(row) {
+            if (!row) return;
+            const select = row.querySelector('.detalle-servicio');
+            const cant = row.querySelector('.detalle-cantidad');
+            const tot = row.querySelector('.detalle-total');
+            if (select && cant && tot && select.value && cant.value) {
+                const opt = select.options[select.selectedIndex];
+                const tarifa = parseFloat(opt.getAttribute('data-precio') || 0);
+                const c = parseInt(cant.value || 0);
+                tot.value = (tarifa * c).toFixed(2);
             }
         }
 
-        if(servSelect) servSelect.addEventListener('change', calcularTotalServicio);
-        if(cantInput) cantInput.addEventListener('input', calcularTotalServicio);
+        const container = document.getElementById('servicios-container');
+        const btnAdd = document.getElementById('btn-add-servicio');
+
+        if (btnAdd && container) {
+            btnAdd.addEventListener('click', function() {
+                const rows = container.querySelectorAll('.servicio-row');
+                const firstRow = rows[0];
+                const newRow = firstRow.cloneNode(true);
+
+                newRow.querySelector('.detalle-cantidad').value = '';
+                newRow.querySelector('.detalle-total').value = '';
+                newRow.querySelector('.remove-btn-col').style.setProperty('display', 'flex', 'important');
+
+                let btn = newRow.querySelector('.remove-servicio-btn');
+                if (!btn) {
+                    btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-danger w-100 remove-servicio-btn';
+                    btn.innerHTML = '<i class="fas fa-trash"></i>';
+                    newRow.querySelector('.remove-btn-col').appendChild(btn);
+                }
+
+                btn.addEventListener('click', function() {
+                    newRow.remove();
+                });
+
+                container.appendChild(newRow);
+            });
+        }
     });
 </script>
 
@@ -255,15 +335,7 @@
 						/*[/]*/
 					});
 				</script>
-				<style>
-					.modal.show.d-block {
-						z-index: 1055 !important;
-						background-color: rgba(0, 0, 0, 0.5) !important;
-					}
-					.modal-backdrop {
-						display: none !important;
-					}
-				</style>
+				
 			</div>
 
 		</div>

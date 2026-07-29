@@ -1,5 +1,6 @@
 package com.hotel.cosumoweb.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,17 +11,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.hotel.cosumoweb.model.dto.request.MinibarRequestDto;
 import com.hotel.cosumoweb.model.dto.response.MinibarResponseDto;
+import com.hotel.cosumoweb.model.dto.response.MinibarDetalleResponseDto;
+import com.hotel.cosumoweb.model.dto.request.ProductoRequestDto;
+import com.hotel.cosumoweb.model.dto.response.ProductoResponseDto;
 import com.hotel.cosumoweb.services.IMinibarService;
 import com.hotel.cosumoweb.services.IProductoService;
 import com.hotel.cosumoweb.services.IHabitacionService;
 
-/**
- * Controlador MVC: Gestión de vistas para consumos de Minibar.
- * Responsabilidad: Administrar los cargos de minibar conectándose al backend mediante WebClient.
- * Implementa control de inmutabilidad para consumos ya pagados.
- */
 @Controller
 @RequestMapping("/minibar")
 public class MinibarController {
@@ -46,10 +46,6 @@ public class MinibarController {
     }
 
     @PostMapping("/guardar")
-    /**
-     * POST /minibar/guardar - Registra o actualiza un cargo de minibar.
-     * Verifica previamente mediante buscarPorId que el registro no haya sido pagado con anterioridad.
-     */
     public String guardar(@Validated @ModelAttribute("minibar") MinibarRequestDto request, BindingResult result, Model model, RedirectAttributes redirect) {
         if (result.hasErrors()) {
             model.addAttribute("minibares", servicio.listarTodos());
@@ -59,32 +55,74 @@ public class MinibarController {
             return "minibar/listarminibar";
         }
         try {
-            if (request.getIdMinibar() > 0) {
+            boolean isNew = (request.getIdMinibar() == 0);
+            MinibarResponseDto existente = null;
+            if (!isNew) {
                 try {
-                    MinibarResponseDto existente = servicio.buscarPorId(request.getIdMinibar());
+                    existente = servicio.buscarPorId(request.getIdMinibar());
                     if (existente != null && "Pagado".equalsIgnoreCase(existente.getEstado())) {
                         redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede modificar el consumo: ya fue pagado."));
                         return "redirect:/minibar";
                     }
                 } catch (Exception ex) {
-                    // Ignore if not found
+                    isNew = true;
                 }
             }
+
+            Map<Integer, Integer> stockReq = new HashMap<>();
+            if (request.getIdProductos() != null && request.getCantidades() != null) {
+                for (int i = 0; i < request.getIdProductos().size(); i++) {
+                    int pid = request.getIdProductos().get(i);
+                    int qty = request.getCantidades().get(i);
+                    stockReq.put(pid, stockReq.getOrDefault(pid, 0) + qty);
+                }
+            }
+
+            if (existente != null && existente.getDetalles() != null) {
+                for (MinibarDetalleResponseDto det : existente.getDetalles()) {
+                    int pid = det.getIdProducto().intValue();
+                    stockReq.put(pid, stockReq.getOrDefault(pid, 0) - det.getCantidad());
+                }
+            }
+
+            for (Map.Entry<Integer, Integer> entry : stockReq.entrySet()) {
+                if (entry.getValue() > 0) {
+                    ProductoResponseDto p = productoService.buscarPorId(entry.getKey());
+                    if (p.getStock() < entry.getValue()) {
+                        redirect.addFlashAttribute("message", crearMensaje("warning", "No hay suficiente stock del producto: " + p.getNombre() + " (Disponible: " + p.getStock() + ")"));
+                        return "redirect:/minibar";
+                    }
+                }
+            }
+
             servicio.guardar(request);
+
+            for (Map.Entry<Integer, Integer> entry : stockReq.entrySet()) {
+                if (entry.getValue() != 0) {
+                    ProductoResponseDto p = productoService.buscarPorId(entry.getKey());
+                    ProductoRequestDto pReq = new ProductoRequestDto();
+                    pReq.setIdProducto(p.getIdProducto().intValue());
+                    pReq.setNombre(p.getNombre());
+                    pReq.setPrecio(p.getPrecio() != null ? p.getPrecio() : 0.0);
+                    pReq.setStock(p.getStock() - entry.getValue());
+                    productoService.guardar(pReq);
+                }
+            }
+            
             redirect.addFlashAttribute("message", crearMensaje("success", "Minibar procesado correctamente."));
         } catch (WebClientResponseException e) {
-			String errorMsg = "Error en API Backend: " + e.getStatusCode();
-			String body = e.getResponseBodyAsString();
-			int idx = body.indexOf("\"message\":\"");
-			if (idx != -1) {
-				int start = idx + 11;
-				int end = body.indexOf("\"", start);
-				if (end != -1) {
-					errorMsg = body.substring(start, end);
-				}
-			}
-			redirect.addFlashAttribute("message", crearMensaje("danger", errorMsg));
-		} catch (Exception e) {
+            String errorMsg = "Error en API Backend: " + e.getStatusCode();
+            String body = e.getResponseBodyAsString();
+            int idx = body.indexOf("\"message\":\"");
+            if (idx != -1) {
+                int start = idx + 11;
+                int end = body.indexOf("\"", start);
+                if (end != -1) {
+                    errorMsg = body.substring(start, end);
+                }
+            }
+            redirect.addFlashAttribute("message", crearMensaje("danger", errorMsg));
+        } catch (Exception e) {
             redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error."));
         }
         return "redirect:/minibar";
@@ -101,8 +139,17 @@ public class MinibarController {
             MinibarRequestDto form = new MinibarRequestDto();
             form.setIdMinibar(dto.getIdMinibar().intValue());
             form.setIdHabitacion(dto.getIdHabitacion().intValue());
-            form.setIdProducto(dto.getIdProducto().intValue());
-            form.setCantidad(dto.getCantidad());
+            
+            List<Integer> ids = new ArrayList<>();
+            List<Integer> cants = new ArrayList<>();
+            if (dto.getDetalles() != null) {
+                for (MinibarDetalleResponseDto det : dto.getDetalles()) {
+                    ids.add(det.getIdProducto().intValue());
+                    cants.add(det.getCantidad());
+                }
+            }
+            form.setIdProductos(ids);
+            form.setCantidades(cants);
             
             model.addAttribute("minibares", servicio.listarTodos());
             model.addAttribute("productosList", productoService.listarTodos());
@@ -123,9 +170,18 @@ public class MinibarController {
             MinibarRequestDto form = new MinibarRequestDto();
             form.setIdMinibar(dto.getIdMinibar().intValue());
             form.setIdHabitacion(dto.getIdHabitacion().intValue());
-            form.setIdProducto(dto.getIdProducto().intValue());
-            form.setCantidad(dto.getCantidad());
             form.setEstado("Pagado");
+            
+            List<Integer> ids = new ArrayList<>();
+            List<Integer> cants = new ArrayList<>();
+            if (dto.getDetalles() != null) {
+                for (MinibarDetalleResponseDto det : dto.getDetalles()) {
+                    ids.add(det.getIdProducto().intValue());
+                    cants.add(det.getCantidad());
+                }
+            }
+            form.setIdProductos(ids);
+            form.setCantidades(cants);
             
             servicio.guardar(form);
             redirect.addFlashAttribute("message", crearMensaje("success", "Consumo de Minibar cobrado (Pagado)."));
@@ -144,7 +200,21 @@ public class MinibarController {
                 return "redirect:/minibar";
             }
             servicio.eliminar(id);
-            redirect.addFlashAttribute("message", crearMensaje("success", "Eliminado correctamente."));
+            
+            if (dto != null && dto.getDetalles() != null) {
+                for (MinibarDetalleResponseDto det : dto.getDetalles()) {
+                    try {
+                        ProductoResponseDto prod = productoService.buscarPorId(det.getIdProducto().intValue());
+                        ProductoRequestDto pReq = new ProductoRequestDto();
+                        pReq.setIdProducto(prod.getIdProducto().intValue());
+                        pReq.setNombre(prod.getNombre());
+                        pReq.setPrecio(prod.getPrecio() != null ? prod.getPrecio() : 0.0);
+                        pReq.setStock(prod.getStock() + det.getCantidad());
+                        productoService.guardar(pReq);
+                    } catch (Exception ex) {}
+                }
+            }
+            redirect.addFlashAttribute("message", crearMensaje("success", "Eliminado correctamente. Stock restaurado."));
         } catch (Exception e) {
             redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar."));
         }

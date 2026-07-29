@@ -81,3 +81,9 @@ La aplicación implementa el patrón **MVC (Model-View-Controller)** adaptado pa
 
 ---
 *Diseñado por Diego Prieto, Jhoel León y Pablo Torres - Universidad Israel*
+
+## 🎨 Mejoras Recientes de UI/UX (Glassmorphism & Modales)
+- **Modales Agrupados (Maestro-Detalle):** Los detalles de Estadía ahora agrupan y suman automáticamente consumos repetidos de Minibar y Servicios para una vista contable consolidada.
+- **Glassmorphism Premium:** Implementación global de efecto Blur (`backdrop-filter`) usando pseudo-elementos (`::before`) en el `.modal.show` para desenfocar uniformemente el contenido principal, barra lateral y barra superior al abrir cualquier modal, manteniendo las ventanas de edición nítidas.
+- **Formularios Dinámicos:** Los modales de Minibar y Servicios soportan la creación y edición dinámica de arrays de productos/servicios en la misma cuenta maestra usando Javascript (`.cloneNode`).
+- **Ajustes de Interfaz:** Reducción del margen superior del fondo azul de navegación a 70px para alinearse con los componentes de la barra de estado.

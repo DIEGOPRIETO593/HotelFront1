@@ -1,19 +1,15 @@
 package com.hotel.cosumoweb.model.dto.response;
 
-import java.math.BigDecimal;
+import java.util.List;
 import lombok.Data;
 
 @Data
 public class DetalleResponseDto {
     private Integer idDetalle;
-    
-    private Integer idEstadia;
-    private Integer idServicio;
-    private String nombreServicio;
-    
-    private Integer cantidad;
-    private BigDecimal total;
     private String numeroHabitacion;
     private String nombreHuesped;
+    private Integer idEstadia;
     private String estado;
+    private Double total;
+    private List<DetalleItemResponseDto> items;
 }

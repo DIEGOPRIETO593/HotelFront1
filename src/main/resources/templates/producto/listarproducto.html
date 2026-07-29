@@ -84,9 +84,7 @@
 								<span th:if="${producto.idProducto == 0}">Registrar Nuevo Producto</span>
 								<span th:unless="${producto.idProducto == 0}">Editar Producto</span>
 							</h5>
-							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" data-dismiss="modal"
-								aria-label="Close"
-								th:onclick="|window.location.href='/producto'|"><span>&times;</span></button>
+							
 						</div>
 
 						<form th:action="@{/producto/guardar}" th:object="${producto}" method="post">
@@ -97,7 +95,9 @@
 								<div class="row">
 									<div class="col-12 form-group mb-3">
 										<label class="form-label fw-semibold">Nombre</label>
-										<input type="text" name="nombre" th:value="*{nombre}" class="form-control" required />
+										<input type="text" name="nombre" th:value="*{nombre}" class="form-control" required 
+											pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+" title="Ingrese letras y números"
+											oninput="this.value = this.value.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '')" />
 									</div>
 								</div>
 								<div class="row">
@@ -132,10 +132,7 @@
 						/*[/]*/
 					});
 				</script>
-				<style>
-					.modal.show.d-block { z-index: 1055 !important; background-color: rgba(0, 0, 0, 0.5) !important; }
-					.modal-backdrop { display: none !important; }
-				</style>
+				
 			</div>
 
 		</div>

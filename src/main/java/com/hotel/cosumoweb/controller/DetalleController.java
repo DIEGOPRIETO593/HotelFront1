@@ -1,9 +1,9 @@
 package com.hotel.cosumoweb.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,15 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.cosumoweb.model.dto.request.DetalleRequestDto;
 import com.hotel.cosumoweb.model.dto.response.DetalleResponseDto;
+import com.hotel.cosumoweb.model.dto.response.DetalleItemResponseDto;
 import com.hotel.cosumoweb.services.ICatalogoService;
 import com.hotel.cosumoweb.services.IDetalleService;
 import com.hotel.cosumoweb.services.IEstadiaService;
 
-/**
- * Controlador MVC: Gestión de vistas para Servicios Consumidos en Estadía.
- * Responsabilidad: Administrar el registro y cobro de servicios adicionales (Room Service, etc.).
- * Bloquea modificaciones sobre servicios liquidados.
- */
 @Controller
 @RequestMapping("/detalle")
 public class DetalleController {
@@ -61,24 +57,30 @@ public class DetalleController {
 		}
 
 		try {
-			if (request.getIdDetalle() != null && request.getIdDetalle() > 0) {
+			boolean isNew = (request.getIdDetalle() == null || request.getIdDetalle() == 0);
+			DetalleResponseDto existente = null;
+			if (!isNew) {
 				try {
-					DetalleResponseDto existente = servicioDetalle.buscarPorId(request.getIdDetalle());
+					existente = servicioDetalle.buscarPorId(request.getIdDetalle());
 					if (existente != null && "Pagado".equalsIgnoreCase(existente.getEstado())) {
 						redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede modificar el consumo: ya fue pagado."));
 						return "redirect:/detalle";
 					}
 				} catch (Exception ex) {
-					// Ignore if not found
+					isNew = true;
 				}
 			}
+
+			if (request.getEstado() == null) {
+				request.setEstado("Por Cobrar");
+			}
+
 			servicioDetalle.guardar(request);
-			redirect.addFlashAttribute("message",
-					crearMensaje("success", "Detalle de servicio guardado correctamente."));
+			redirect.addFlashAttribute("message", crearMensaje("success", "Consumo de servicio guardado correctamente."));
 		} catch (WebClientResponseException e) {
 			redirect.addFlashAttribute("message", crearMensaje("danger", "Error en API Backend: " + e.getStatusCode()));
 		} catch (Exception e) {
-			redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurrió un error al guardar los datos."));
+			redirect.addFlashAttribute("message", crearMensaje("danger", "Ocurri un error al guardar los datos."));
 		}
 
 		return "redirect:/detalle";
@@ -87,18 +89,24 @@ public class DetalleController {
 	@GetMapping("/editar/{id}")
 	public String editarDetalle(@PathVariable("id") Integer id, Model model, RedirectAttributes redirect) {
 		try {
-			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
-			if ("Pagado".equalsIgnoreCase(dtoEncontrado.getEstado())) {
-				redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede editar: el consumo ya se encuentra en estado 'Pagado'."));
+			DetalleResponseDto dto = servicioDetalle.buscarPorId(id);
+			if (dto != null && "Pagado".equalsIgnoreCase(dto.getEstado())) {
+				redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede editar: el consumo ya est pagado."));
 				return "redirect:/detalle";
 			}
 
 			DetalleRequestDto detalleForm = new DetalleRequestDto();
-			detalleForm.setIdDetalle(dtoEncontrado.getIdDetalle());
-			detalleForm.setIdEstadia(dtoEncontrado.getIdEstadia());
-			detalleForm.setIdServicio(dtoEncontrado.getIdServicio());
-			detalleForm.setCantidad(dtoEncontrado.getCantidad());
-			detalleForm.setTotal(dtoEncontrado.getTotal());
+			detalleForm.setIdDetalle(dto.getIdDetalle());
+			detalleForm.setIdEstadia(dto.getIdEstadia());
+			detalleForm.setEstado(dto.getEstado());
+			
+			if (dto.getItems() != null) {
+				for(DetalleItemResponseDto item : dto.getItems()) {
+					detalleForm.getIdServicios().add(item.getIdServicio());
+					detalleForm.getCantidades().add(item.getCantidad());
+					detalleForm.getTotales().add(item.getTotal() != null ? java.math.BigDecimal.valueOf(item.getTotal()) : java.math.BigDecimal.ZERO);
+				}
+			}
 
 			cargarListasModel(model);
 			model.addAttribute("detalle", detalleForm);
@@ -106,7 +114,7 @@ public class DetalleController {
 
 			return "detalle/listardetalle";
 		} catch (Exception e) {
-			redirect.addFlashAttribute("message", crearMensaje("danger", "No se encontró el detalle a editar."));
+			redirect.addFlashAttribute("message", crearMensaje("danger", "No se encontr el consumo."));
 			return "redirect:/detalle";
 		}
 	}
@@ -114,20 +122,22 @@ public class DetalleController {
 	@GetMapping("/pagar/{id}")
 	public String pagarDetalle(@PathVariable("id") Integer id, RedirectAttributes redirect) {
 		try {
-			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
-
-			DetalleRequestDto detalleForm = new DetalleRequestDto();
-			detalleForm.setIdDetalle(dtoEncontrado.getIdDetalle());
-			detalleForm.setIdEstadia(dtoEncontrado.getIdEstadia());
-			detalleForm.setIdServicio(dtoEncontrado.getIdServicio());
-			detalleForm.setCantidad(dtoEncontrado.getCantidad());
-			detalleForm.setTotal(dtoEncontrado.getTotal());
-			detalleForm.setEstado("Pagado");
-
-			servicioDetalle.guardar(detalleForm);
-			redirect.addFlashAttribute("message", crearMensaje("success", "Servicio consumido cobrado (Pagado)."));
+			DetalleResponseDto dto = servicioDetalle.buscarPorId(id);
+			DetalleRequestDto form = new DetalleRequestDto();
+			form.setIdDetalle(dto.getIdDetalle());
+			form.setIdEstadia(dto.getIdEstadia());
+			form.setEstado("Pagado");
+			if(dto.getItems() != null) {
+				for(DetalleItemResponseDto item : dto.getItems()) {
+					form.getIdServicios().add(item.getIdServicio());
+					form.getCantidades().add(item.getCantidad());
+					form.getTotales().add(item.getTotal() != null ? java.math.BigDecimal.valueOf(item.getTotal()) : java.math.BigDecimal.ZERO);
+				}
+			}
+			servicioDetalle.guardar(form);
+			redirect.addFlashAttribute("message", crearMensaje("success", "Servicios consumidos cobrados (Pagados)."));
 		} catch (Exception e) {
-			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo procesar el pago del servicio."));
+			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo procesar el pago de los servicios."));
 		}
 		return "redirect:/detalle";
 	}
@@ -135,18 +145,17 @@ public class DetalleController {
 	@GetMapping("/eliminar/{id}")
 	public String eliminarDetalle(@PathVariable("id") Integer id, RedirectAttributes redirect) {
 		try {
-			DetalleResponseDto dtoEncontrado = servicioDetalle.buscarPorId(id);
-			if (dtoEncontrado != null && "Pagado".equalsIgnoreCase(dtoEncontrado.getEstado())) {
+			DetalleResponseDto dto = servicioDetalle.buscarPorId(id);
+			if (dto != null && "Pagado".equalsIgnoreCase(dto.getEstado())) {
 				redirect.addFlashAttribute("message", crearMensaje("warning", "No se puede eliminar: el consumo ya se encuentra en estado 'Pagado'."));
 				return "redirect:/detalle";
 			}
 			servicioDetalle.eliminar(id);
-			redirect.addFlashAttribute("message", crearMensaje("success", "Detalle eliminado exitosamente."));
+			redirect.addFlashAttribute("message", crearMensaje("success", "Consumo eliminado exitosamente."));
 		} catch (WebClientResponseException e) {
-			redirect.addFlashAttribute("message",
-					crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar el detalle."));
+			redirect.addFlashAttribute("message", crearMensaje("danger", "Error " + e.getStatusCode() + " al eliminar el detalle."));
 		} catch (Exception e) {
-			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar el detalle."));
+			redirect.addFlashAttribute("message", crearMensaje("danger", "No se pudo eliminar el consumo."));
 		}
 		return "redirect:/detalle";
 	}

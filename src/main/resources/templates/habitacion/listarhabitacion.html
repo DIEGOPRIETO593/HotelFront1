@@ -65,9 +65,12 @@
 										<button th:if="${h.estado == 'Ocupada'}" type="button" class="btn btn-sm btn-secondary me-2 shadow-sm" disabled title="No se puede editar una habitación ocupada">
 											<i class="fas fa-lock"></i> Ocupada
 										</button>
-										<a th:href="@{/habitacion/eliminar/{id}(id=${h.idHabitacion})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar?');">
+										<a th:if="${h.estado != 'Ocupada'}" th:href="@{/habitacion/eliminar/{id}(id=${h.idHabitacion})}" class="btn btn-sm btn-outline-danger shadow-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar?');">
 											<i class="fas fa-trash"></i> Eliminar
 										</a>
+										<button th:if="${h.estado == 'Ocupada'}" type="button" class="btn btn-sm btn-secondary shadow-sm" disabled title="No se puede eliminar una habitación ocupada">
+											<i class="fas fa-lock"></i> Ocupada
+										</button>
 									</td>
 								</tr>
 								<tr th:if="${#lists.isEmpty(habitaciones)}">
@@ -92,9 +95,7 @@
 								<span th:if="${habitacion.idHabitacion == 0}">Registrar Nueva Habitación</span>
 								<span th:unless="${habitacion.idHabitacion == 0}">Editar Habitación</span>
 							</h5>
-							<button type="button" class="close btn btn-link text-dark p-0 m-0" style="font-size: 1.5rem; text-decoration: none;" data-dismiss="modal"
-								aria-label="Close"
-								th:onclick="|window.location.href='/habitacion'|"><span>&times;</span></button>
+							
 						</div>
 
 						<form th:action="@{/habitacion/guardar}" th:object="${habitacion}" method="post">
@@ -105,7 +106,9 @@
 								<div class="row">
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Número</label>
-										<input type="text" name="numero" th:value="*{numero}" class="form-control" required />
+										<input type="text" name="numero" th:value="*{numero}" class="form-control" required 
+											pattern="[0-9]+" title="Ingrese solo números"
+											oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
 									</div>
 									<div class="col-12 col-md-6 form-group mb-3">
 										<label class="form-label fw-semibold">Estado</label>
@@ -162,15 +165,7 @@
 						/*[/]*/
 					});
 				</script>
-				<style>
-					.modal.show.d-block {
-						z-index: 1055 !important;
-						background-color: rgba(0, 0, 0, 0.5) !important;
-					}
-					.modal-backdrop {
-						display: none !important;
-					}
-				</style>
+				
 			</div>
 
 		</div>
