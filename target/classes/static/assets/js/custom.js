@@ -108,3 +108,52 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+
+function descargarFacturaPDF() {
+    const originalElement = document.querySelector('#detalleEstadiaModal .modal-body');
+    const printContainer = originalElement.cloneNode(true);
+    
+    // Estilizar para impresion
+    printContainer.style.maxHeight = 'none';
+    printContainer.style.overflow = 'visible';
+    printContainer.style.padding = '30px';
+    printContainer.style.backgroundColor = '#ffffff';
+    
+    // Ocultar barras de scroll si quedan
+    printContainer.style.overflowX = 'hidden';
+    printContainer.style.overflowY = 'hidden';
+    
+    // Agregar Cabecera de Factura
+    const header = document.createElement('div');
+    header.innerHTML = '<div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #6777ef; padding-bottom: 15px;"><h2 style="color: #6777ef; margin-bottom: 0; font-weight: bold; font-family: sans-serif;">FACTURA DE ESTADIA</h2><p style="color: #6c757d; margin-top: 5px; font-size: 14px; font-family: sans-serif;">Documento Resumen de Cuenta</p></div>';
+    printContainer.insertBefore(header, printContainer.firstChild);
+    
+    // Evitar problemas de renderizado en nodos desconectados
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '-9999px';
+    wrapper.style.top = '-9999px';
+    wrapper.style.width = '800px'; // Forzar ancho de escritorio
+    wrapper.appendChild(printContainer);
+    document.body.appendChild(wrapper);
+    
+    let huespedName = 'cliente';
+    const huespedElem = document.getElementById('det-est-huesped');
+    if (huespedElem) {
+        huespedName = huespedElem.textContent.trim().replace(/[^a-zA-Z0-9]/gi, '_').toLowerCase();
+        if (!huespedName) huespedName = 'cliente';
+    }
+    
+    const opt = {
+      margin:       [0.5, 0.5, 0.5, 0.5],
+      filename:     'Factura_Estadia_' + huespedName + '.pdf',
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(printContainer).save().then(() => {
+        document.body.removeChild(wrapper);
+    });
+}

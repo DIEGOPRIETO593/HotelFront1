@@ -344,7 +344,6 @@
 						if (btnDescargarFactura) btnDescargarFactura.style.display = 'none';
 						if (minibarPendiente || serviciosPendientes) {
 							if (btnPagar) btnPagar.style.display = 'none';
-						if (btnDescargarFactura) btnDescargarFactura.style.display = 'inline-block';
 							if (btnPagarTodo) {
 								btnPagarTodo.style.display = 'inline-block';
 								btnPagarTodo.href = '/estadia/pagarTodo/' + id;
@@ -490,7 +489,7 @@
 								class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
 								
                                 <button type="button" id="btn-descargar-factura" class="btn btn-primary px-4 shadow-sm me-auto" onclick="descargarFacturaPDF()" style="display: none;">
-                                    <i class="fas fa-file-pdf me-2"></i> Descargar Factura
+                                    <i class="fas fa-file-pdf me-2"></i> Descargar en PDF
                                 </button>
 								<a id="det-btn-pagar-todo" href="#"
 									class="btn btn-danger px-4 shadow-sm me-2"
