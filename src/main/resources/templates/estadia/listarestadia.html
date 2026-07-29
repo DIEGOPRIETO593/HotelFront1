@@ -300,6 +300,7 @@
 					// Update payment rules & alert
 					const alertBox = document.getElementById('det-est-alert');
 					const btnPagar = document.getElementById('det-btn-pagar');
+					const btnDescargarFactura = document.getElementById('btn-descargar-factura');
 					const btnPagarTodo = document.getElementById('det-btn-pagar-todo');
 					const rowGranTotal = document.getElementById('row-gran-total');
 					const granTotalElem = document.getElementById('det-gran-total');
@@ -331,6 +332,7 @@
 
 					if (estado === 'Pagado') {
 						if (btnPagar) btnPagar.style.display = 'none';
+						if (btnDescargarFactura) btnDescargarFactura.style.display = 'inline-block';
 						if (btnPagarTodo) btnPagarTodo.style.display = 'none';
 						if (rowGranTotal) rowGranTotal.style.setProperty('display', 'flex', 'important');
 						if (alertBox) {
@@ -339,8 +341,10 @@
 							alertBox.style.display = 'flex';
 						}
 					} else {
+						if (btnDescargarFactura) btnDescargarFactura.style.display = 'none';
 						if (minibarPendiente || serviciosPendientes) {
 							if (btnPagar) btnPagar.style.display = 'none';
+						if (btnDescargarFactura) btnDescargarFactura.style.display = 'inline-block';
 							if (btnPagarTodo) {
 								btnPagarTodo.style.display = 'inline-block';
 								btnPagarTodo.href = '/estadia/pagarTodo/' + id;
@@ -484,6 +488,10 @@
 							</div>
 							<div
 								class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex justify-content-end">
+								
+                                <button type="button" id="btn-descargar-factura" class="btn btn-primary px-4 shadow-sm me-auto" onclick="descargarFacturaPDF()" style="display: none;">
+                                    <i class="fas fa-file-pdf me-2"></i> Descargar Factura
+                                </button>
 								<a id="det-btn-pagar-todo" href="#"
 									class="btn btn-danger px-4 shadow-sm me-2"
 									onclick="return confirm('¿Confirmas el pago TOTAL (Estadía + Consumos + Servicios)?');"
@@ -670,3 +678,5 @@
 		<!-- Modal Factura Estadia -->
 </body>
 </html>
+
+
